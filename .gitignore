@@ -1,0 +1,14 @@
+# env files
+.env
+.env.*
+
+# node
+node_modules/
+
+# build
+dist
+dist-ssr
+
+# logs
+logs
+*.log
