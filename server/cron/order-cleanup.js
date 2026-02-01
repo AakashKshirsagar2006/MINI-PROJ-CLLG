@@ -6,7 +6,7 @@ const FoodItems = require('../model/food-item-model');
 const cleanupJob = () => {
   
   cron.schedule('*/30 * * * *', async () => {
-    console.log('Running Cron: Checking for expired pending orders...');
+    console.log('Running Cron: Checking for expired created orders...');
     
     const session = await mongoose.startSession();
     try {
@@ -14,7 +14,7 @@ const cleanupJob = () => {
 
       
       const expiredOrders = await Order.find({
-        status: 'PENDING',
+        status: 'CREATED',
         expiresAt: { $lt: new Date() } 
       }).session(session);
 

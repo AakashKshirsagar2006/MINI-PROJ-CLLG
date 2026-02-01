@@ -23,7 +23,7 @@ app.use(cors({
 }));
 
 //app.use("/payment", paymentRouter);
-
+app.use("/webhook", require("./routes/razorpay-webhook"));
 app.use(express.json())
 app.use(express.urlencoded({extended:true}));
 
