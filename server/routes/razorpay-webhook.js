@@ -2,6 +2,8 @@ const express = require("express");
 const crypto = require("crypto");
 const Order = require("../model/order-model");
 const PaymentDetails = require("../model/payment-details-model");
+const createOrderUID = require("../utils/orderUID");
+const generateOrderOTP = require("../utils/orderOTP");
 
 const router = express.Router();
 
@@ -58,6 +60,8 @@ router.post(
         order.razorpayPaymentId = payment.id;
         order.paidAt = new Date();
         order.fullfillment_status = "PENDING";
+        order.orderUID = await createOrderUID();
+        order.orderOTP = generateOrderOTP();
         
         await order.save();
 
