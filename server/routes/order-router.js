@@ -263,6 +263,64 @@ router.get("/active-orders",async (req, res)=>{
  }
 })
 
+// FOR PAST ORDERS (History)
+router.get("/past-orders", async (req, res) => {
+  const user = req.session.user;
+  if (!user) return res.status(401).json({ message: "Unauthenticated" });
 
+  try {
+    // Logic: Find orders that are NOT "Active" and NOT just "Created"
+    // So we want: CANCELLED, EXPIRED, or (PAID + COMPLETED/SERVED)
+    const pastOrders = await Order.find({
+      userId: user._id,
+      $or: [
+        { status: { $in: ["CANCELLED", "EXPIRED", "FAILED"] } },
+        {
+          status: "PAID",
+          fullfillment_status: { $in: ["COMPLETED", "SERVED"] } // Matches your dashboard logic
+        }
+      ]
+    })
+      .sort({ createdAt: -1 }) // Sort by Newest first
+      .limit(10); // Show only last 10
+
+    // Transform data to match what the Frontend Card expects
+    const formattedOrders = pastOrders.map((order) => {
+      // 1. Format Date (e.g., "12 Feb")
+      const dateObj = new Date(order.createdAt);
+      const dateString = dateObj.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short"
+      });
+
+      // 2. Format Items (e.g., "Burger, Fries")
+      const itemsString = order.items.map((i) => i.name).join(", ");
+
+      // 3. Determine Status for UI Label
+      let uiStatus = "Completed";
+      if (order.status === "CANCELLED") uiStatus = "Cancelled";
+      else if (order.status === "EXPIRED") uiStatus = "Expired";
+      else if (order.status === "FAILED") uiStatus = "Failed";
+
+      // 4. Handle ID (Use OrderUID if available, else slice Mongo ID)
+      const displayId = order.orderUID
+        ? `#${order.orderUID}`
+        : `#OD-${order._id.toString().slice(-4).toUpperCase()}`;
+
+      return {
+        id: displayId,
+        date: dateString,
+        items: itemsString,
+        total: order.amount,
+        status: uiStatus
+      };
+    });
+
+    return res.json({ pastOrders: formattedOrders });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
 
 module.exports = router;

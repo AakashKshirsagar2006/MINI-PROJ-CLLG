@@ -85,9 +85,27 @@ const signupController = [
       const OTP = getOTP();
       const hashed_otp = await bcrypt.hash(OTP, 5)
       req.session.signup.OTP = hashed_otp;
-      const subject = "FCRIT Canteen Registration"
-      const messageBody = "Your OTP :" + OTP;
-      await sendEmail(email, subject, messageBody);
+      
+      const subject = "FCRIT Canteen Registration - Verify Email";
+      
+      // 1. Plain Text Version (for old phones)
+      const textBody = `Your OTP is ${OTP}. It is valid for 10 minutes only.`;
+
+      // 2. HTML Version (Professional Look)
+      const htmlBody = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+          <h2 style="color: #f97316;">FCRIT Canteen</h2>
+          <p>Hello ${name},</p>
+          <p>Please use the following OTP to complete your registration:</p>
+          <h1 style="background-color: #f3f4f6; padding: 10px; display: inline-block; letter-spacing: 5px; color: #333;">${OTP}</h1>
+          <p style="color: #d32f2f; font-weight: bold;">⚠️ This OTP is valid for 10 minutes only.</p>
+          <p>If you did not request this, please ignore this email.</p>
+        </div>
+      `;
+
+      // Pass BOTH text and HTML
+      await sendEmail(email, subject, textBody, htmlBody);
+      
       res.status(200).json({ message: "OTP set" });
     }
     catch (err) {
@@ -97,8 +115,6 @@ const signupController = [
     }
   }
 ];
-
-
 
 
  const otpValidationController =  [
