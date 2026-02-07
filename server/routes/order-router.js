@@ -5,6 +5,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Order = require('../model/order-model');
 const FoodItems = require('../model/food-item-model');
+const ArchivedOrder = require('../model/archived-order-model');
 
 
 const router = express.Router();
@@ -263,46 +264,52 @@ router.get("/active-orders",async (req, res)=>{
  }
 })
 
-// FOR PAST ORDERS (History)
+
+// FOR PAST ORDERS ye dono check krega (History from Archive + Active)
 router.get("/past-orders", async (req, res) => {
   const user = req.session.user;
   if (!user) return res.status(401).json({ message: "Unauthenticated" });
 
   try {
-    // Logic: Find orders that are NOT "Active" and NOT just "Created"
-    // So we want: CANCELLED, EXPIRED, or (PAID + COMPLETED/SERVED)
-    const pastOrders = await Order.find({
-      userId: user._id,
-      $or: [
-        { status: { $in: ["CANCELLED", "EXPIRED", "FAILED"] } },
-        {
-          status: "PAID",
-          fullfillment_status: { $in: ["COMPLETED", "SERVED"] } // Matches your dashboard logic
-        }
-      ]
-    })
-      .sort({ createdAt: -1 }) // Sort by Newest first
-      .limit(10); // Show only last 10
+    const userId = user._id;
 
-    // Transform data to match what the Frontend Card expects
-    const formattedOrders = pastOrders.map((order) => {
-      // 1. Format Date (e.g., "12 Feb")
+    // 1. Fetch History from ARCHIVE
+    const archivedOrders = await ArchivedOrder.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    // 2. Fetch History from ACTIVE (Recent failures/cancellations)
+    const activeHistory = await Order.find({
+      userId,
+      status: { $in: ["CANCELLED", "EXPIRED", "FAILED"] } 
+    }).sort({ createdAt: -1 }).limit(5);
+
+    // 3. Merge Both Lists
+    const allHistory = [...activeHistory, ...archivedOrders];
+
+    // 4. Sort and Slice
+    allHistory.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const finalHistory = allHistory.slice(0, 10);
+
+    // 5. Transform data for Frontend
+    const formattedOrders = finalHistory.map((order) => {
       const dateObj = new Date(order.createdAt);
       const dateString = dateObj.toLocaleDateString("en-GB", {
         day: "numeric",
         month: "short"
       });
 
-      // 2. Format Items (e.g., "Burger, Fries")
       const itemsString = order.items.map((i) => i.name).join(", ");
 
-      // 3. Determine Status for UI Label
-      let uiStatus = "Completed";
+      // --- LOGIC FIX HERE ---
+      let uiStatus = "Completed"; // Default for served orders
+      
       if (order.status === "CANCELLED") uiStatus = "Cancelled";
       else if (order.status === "EXPIRED") uiStatus = "Expired";
       else if (order.status === "FAILED") uiStatus = "Failed";
-
-      // 4. Handle ID (Use OrderUID if available, else slice Mongo ID)
+      
+      // If it's PAID and SERVED (from Archive), we show "Completed" to the user
+      
       const displayId = order.orderUID
         ? `#${order.orderUID}`
         : `#OD-${order._id.toString().slice(-4).toUpperCase()}`;
@@ -317,6 +324,7 @@ router.get("/past-orders", async (req, res) => {
     });
 
     return res.json({ pastOrders: formattedOrders });
+
   } catch (err) {
     console.log(err.message);
     res.status(500).json({ message: err.message });

@@ -14,6 +14,7 @@ const validateCartSession = require('./controller/cart/cart-validator');
 const orderRouter = require('./routes/order-router');
 const protectedOrderRouter = require('./routes/order-router-protected');
 const startCronJobs = require('./cron/order-cleanup');
+const analyticsRouter = require('./routes/analytics-router');
 const app = express();
 
 
@@ -57,6 +58,7 @@ app.use('/cart',validateCartSession);
 app.use(cartRouter);
 app.use('/orders',orderRouter);
 app.use("/payments", require("./routes/payment-router"));
+app.use("/admin", analyticsRouter);
 app.use('/protected',protectedOrderRouter);
 mongoose.connect(process.env.MONGO_URI).then(()=>{
 startCronJobs();
