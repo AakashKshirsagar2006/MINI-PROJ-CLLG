@@ -8,6 +8,7 @@ import {
   IoHourglassOutline   
 } from "react-icons/io5";
 import { IoStatsChartOutline } from "react-icons/io5"; //for analytics
+import { IoWalletOutline } from "react-icons/io5"; //for payments
 
 const AdminHeaderAndNav = ()=>{
   return (
@@ -26,6 +27,7 @@ const AdminHeaderAndNav = ()=>{
                 <NavLink to="/admin/booking" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Manual Booking</NavLink>
                 <NavLink to="/admin/settings" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Admin Space</NavLink>
                 <NavLink to="/admin/analytics" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Analytics</NavLink>
+                <NavLink to="/admin/payments" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Payment Logs</NavLink>
             </nav>
 
             {/* Search & Profile */}
@@ -105,6 +107,15 @@ const AdminHeaderAndNav = ()=>{
               <IoStatsChartOutline className="w-6 h-6" />
             </div>
             <span className="text-[10px] font-medium">Stats</span>
+          </NavLink>
+          {/* 7. Payment Logs */}
+          <NavLink
+            to={"/admin/payments"}
+            className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? "text-orange-500" : "hover:text-white transition"}`}>
+            <div className="relative">
+              <IoWalletOutline className="w-6 h-6" />
+            </div>
+            <span className="text-[10px] font-medium">Logs</span>
           </NavLink>
 
         </div>

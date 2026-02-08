@@ -68,8 +68,12 @@ router.post(
         // 5. Payment Logs Save karo (Admin Panel ke liye)
         try {
           await new PaymentDetails({
+
             orderId: order._id,
             userId: order.userId,
+            
+            userName: order.userName, 
+            userEmail: order.userEmail,
             transactionId: payment.id,
             paymentMethodId: payment.method,
             amount: payment.amount / 100, // Amount paise mein hota hai, isliye /100
