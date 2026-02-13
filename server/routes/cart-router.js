@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const FoodItems = require('../model/food-item-model');
-
+const Order = require('../model/order-model'); 
 const router = express.Router();
 
 function toObjectId(id) {
@@ -15,45 +15,57 @@ router.post('/cart/add',async (req,res)=>{
   const {itemID} = req.body;
    
   try{
+    // --- BLOCKING LOGIC ---
+    // Check if a CREATED order exists that has NOT expired yet.
+    const pendingOrder = await Order.findOne({
+        userId: user._id,
+        status: "CREATED",
+        expiresAt: { $gt: new Date() } //Only block if time is remaining
+    });
+
+    if (pendingOrder) {
+        return res.status(409).json({ 
+            errors: ["You have a pending order awaiting payment. Please complete or cancel it in 'My Orders'."] 
+        });
+    }
+    // ----------------------------
+
     const itemObjectId = toObjectId(itemID);
     if(!itemObjectId) return res.status(400).json({errors:["Invalid food item"]});
-  const dbResult = await FoodItems.findById(itemObjectId);
-  if(!dbResult) return res.status(400).json({errors:["Invalid food item"]});
+    
+    const dbResult = await FoodItems.findById(itemObjectId);
+    if(!dbResult) return res.status(400).json({errors:["Invalid food item"]});
 
-  if (!req.session.cart) {
-  const expiresAt = new Date();
-  expiresAt.setHours(24, 0, 0, 0);
-  req.session.cart = {
-    itemIDs: [itemID],
-    expiresAt
-  };
+    if (!req.session.cart) {
+        const expiresAt = new Date();
+        expiresAt.setHours(24, 0, 0, 0);
+        req.session.cart = {
+            itemIDs: [itemID],
+            expiresAt
+        };
 
-  req.session.cookie.maxAge =
-    expiresAt.getTime() - Date.now();
+        req.session.cookie.maxAge = expiresAt.getTime() - Date.now();
+        return res.status(200).json({item:dbResult});
+    }
+    // duplicates check karo
+    if (req.session.cart.itemIDs.includes(itemID.toString())) {
+        return res.status(200).json({ item: dbResult });
+    }
+    // cart limit check karo
+    if (req.session.cart.itemIDs.length >=20) {
+        return res.status(409).json({ errors: ["Cart limit exceeded"] });
+    }
 
-  return res.status(200).json({item:dbResult});
-}
-
-if (req.session.cart.itemIDs.includes(itemID.toString())) {
-  return res.status(200).json({ item: dbResult });
-  }
-
-  if (req.session.cart.itemIDs.length >=20) {
-  return res.status(409).json({ errors: ["Cart limit exceeded"] });
-   }
-
-
-  req.session.cart.itemIDs.push(dbResult._id.toString());
-  res.status(200).json({item:dbResult});
+    // Add item to cart
+    req.session.cart.itemIDs.push(dbResult._id.toString());
+    res.status(200).json({item:dbResult});
 
   }
   catch(err){
     console.error("Error adding item to cart:", err);
-    return res.status(500).json({errrors:["Internal Server Error"]});
+    return res.status(500).json({errors:["Internal Server Error"]});
   }
-  
-  return;
-})
+});
 
 
 router.get('/cart/get',async (req, res)=>{

@@ -75,18 +75,33 @@ router.post("/create", async (req, res) => {
   const { requestedOrderDetails } = req.body;
 
   const session = await mongoose.startSession();
-  let paymentIntent = "";
+  
   try {
     session.startTransaction();
     const existingOrder = await Order.findOne({ userId, status: "CREATED" }, null, { session });
+    
     if (existingOrder) {
-
         if (existingOrder.expiresAt > new Date()) {
             await session.abortTransaction();
             session.endSession();
-            return res.status(200).json({ orderDetails: existingOrder });
+            
+            // 🛑 SAFETY FIX: If Razorpay ID failed to generate last time, prevent crash
+            if (!existingOrder.razorpayOrderId) {
+                 return res.status(400).json({ message: "Payment setup failed previously. Please cancel this order in My Orders." });
+            }
+
+            // ✅ SUCCESS: Return existing order details + razorpay keys to reopen popup
+            return res.status(200).json({ 
+              orderDetails: existingOrder,
+              razorpay: {
+                orderId: existingOrder.razorpayOrderId,
+                amount: existingOrder.amount * 100,
+                currency: existingOrder.currency
+              }
+            });
         }
-        // if existing oreder is expired
+        
+        // If existing order is expired, unlock items
         for (const item of existingOrder.items) {
              await FoodItems.updateOne({ _id: item.foodItemId }, { $inc: { locked_quantity: -item.qty } }, { session });
         }
@@ -99,17 +114,10 @@ router.post("/create", async (req, res) => {
     let totalAmount = 0;
 
     for (const item of requestedOrderDetails) {
-      const food = await FoodItems.findOne(
-        { _id: item.foodItemId },
-        null,
-        { session }
-      );
-
+      const food = await FoodItems.findOne({ _id: item.foodItemId }, null, { session });
       if (!food) continue;
 
-      // SAFETY FIX: Handle case where database might return undefined
       const currentLocked = food.locked_quantity || 0; 
-      
       const availableQty = food.quantity - currentLocked;
       const lockQty = Math.min(Number(item.qty), availableQty);
 
@@ -134,8 +142,8 @@ router.post("/create", async (req, res) => {
     if (lockedItems.length === 0) {
       throw new Error("NO_ITEMS_AVAILABLE");
     }
-    //Payment intent creation
     
+    // Create the Order
     const [order] = await Order.create(
       [
         {
@@ -144,17 +152,17 @@ router.post("/create", async (req, res) => {
           userEmail: req.session.user.email,
           items: lockedItems,
           amount: totalAmount,
-          status: "CREATED",              // IMPORTANT
-          paymentProvider: "RAZORPAY",    // TEMP default
+          status: "CREATED",
+          paymentProvider: "RAZORPAY",
           expiresAt: new Date(Date.now() + 10 * 60 * 1000)
         }
       ],
       { session }
     );
   
-
     await session.commitTransaction();
     session.endSession();
+
     // -------- RAZORPAY (OUTSIDE TRANSACTION) --------
     const razorpayOrder = await razorpay.orders.create({
       amount: totalAmount * 100, // paise
@@ -166,14 +174,15 @@ router.post("/create", async (req, res) => {
     // Update Mongo order with Razorpay order ID
     order.razorpayOrderId = razorpayOrder.id;
     await order.save();
-          return res.status(201).json({
-            orderDetails: order,
-            razorpay: {
-              orderId: razorpayOrder.id,
-              amount: razorpayOrder.amount,
-              currency: razorpayOrder.currency
-            }
-          });
+    
+    return res.status(201).json({
+      orderDetails: order,
+      razorpay: {
+        orderId: razorpayOrder.id,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency
+      }
+    });
 
   } catch (err) {
     await session.abortTransaction();
