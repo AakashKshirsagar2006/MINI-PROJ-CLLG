@@ -340,4 +340,54 @@ router.get("/past-orders", async (req, res) => {
   }
 });
 
+// ==========iske baad stats wala route hai jo ki dono jagah se data lekar user ko total spent aur total orders batayega (Active + Archive) ==========
+// GET USER STATS (Fast Aggregation)
+router.get("/stats", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ message: "Unauthenticated" });
+  
+  try {
+    const userId = new mongoose.Types.ObjectId(req.session.user._id);
+
+    // 1. Calculate from ARCHIVE (History)
+    // Only count orders that were actually SERVED (money spent)
+    const archiveStats = await ArchivedOrder.aggregate([
+      { $match: { userId: userId, fullfillment_status: "SERVED" } },
+      {
+        $group: {
+          _id: null,
+          totalSpent: { $sum: "$amount" },
+          totalOrders: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 2. Calculate from ACTIVE (Current)
+    // Only count orders that are PAID (money currently locked)
+    const activeStats = await Order.aggregate([
+      { $match: { userId: userId, status: "PAID" } },
+      {
+        $group: {
+          _id: null,
+          totalSpent: { $sum: "$amount" },
+          totalOrders: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 3. Combine Them
+    const archived = archiveStats[0] || { totalSpent: 0, totalOrders: 0 };
+    const active = activeStats[0] || { totalSpent: 0, totalOrders: 0 };
+
+    return res.json({
+      totalSpent: archived.totalSpent + active.totalSpent,
+      totalOrders: archived.totalOrders + active.totalOrders
+    });
+
+  } catch (err) {
+    console.error("Stats Error:", err);
+    return res.status(500).json({ message: "Error fetching stats" });
+  }
+});
+
+
 module.exports = router;
