@@ -12,8 +12,8 @@ const AuthLeftDesktopVisual = ()=>{
         
         <div className="relative z-10 p-16 flex flex-col justify-between h-full">
           <div className="flex items-center gap-2 text-white">
-            <div className="w-8 h-8 bg-orange-500 rounded-tr-xl rounded-bl-xl flex items-center justify-center font-bold text-lg">C</div>
-            <span className="text-xl font-serif font-bold tracking-tighter">Cantina.</span>
+            <div className="w-8 h-8 bg-orange-500 rounded-tr-xl rounded-bl-xl flex items-center justify-center font-bold text-lg">H</div>
+            <span className="text-xl font-serif font-bold tracking-tighter">Hungry Pirates.</span>
           </div>
           
           <div className="text-white max-w-lg">

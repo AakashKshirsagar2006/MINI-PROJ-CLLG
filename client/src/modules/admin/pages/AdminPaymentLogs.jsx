@@ -12,7 +12,7 @@ const AdminPaymentLogs = () => {
   const fetchLogs = async (query = "") => {
     setLoading(true);
     try {
-      // Note: We use the /payments prefix because that's likely where your payment-router is mounted in app.js
+      // Note: We use the /payments prefix because this is where our payment-router is mounted in app.js
       const url = `http://localhost:3000/payments/logs?type=${activeTab.toLowerCase()}&search=${query}`;
       
       const response = await fetch(url, {

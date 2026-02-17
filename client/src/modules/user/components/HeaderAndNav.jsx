@@ -57,7 +57,7 @@ const Logout = async () => {
         {/* Brand Logo */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-orange-500 rounded-tr-xl rounded-bl-xl flex items-center justify-center text-white font-bold text-lg">
-            C
+            H
           </div>
           <span className="text-2xl font-serif font-bold tracking-tighter text-slate-900">
             Hungry Pirates.
