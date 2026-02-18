@@ -7,10 +7,12 @@ import {
   IoSettingsOutline,   
   IoHourglassOutline   
 } from "react-icons/io5";
-import { IoStatsChartOutline } from "react-icons/io5"; //for analytics
-import { IoWalletOutline } from "react-icons/io5"; //for payments
+import { FiUserX } from "react-icons/fi";
+import { CiLogout } from "react-icons/ci";
+import useAuth from "../../../shared/hooks/useAuth";
 
 const AdminHeaderAndNav = ()=>{
+const {userState, logout} = useAuth();
   return (
     <>
      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
@@ -21,22 +23,25 @@ const AdminHeaderAndNav = ()=>{
             
             {/* DESKTOP NAVIGATION (Hidden on Mobile) */}
             <nav className="hidden md:flex items-center gap-8">
-                <NavLink to="/admin/dashboard" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Current Orders</NavLink>
+                <NavLink to="/admin/" end className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Current Orders</NavLink>
                 <NavLink to="/admin/pending" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Pending</NavLink>
-                <NavLink to="/admin/stock" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Stock Actions</NavLink>
+                <NavLink to="/admin/stock-actions" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Stock Actions</NavLink>
                 <NavLink to="/admin/booking" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Manual Booking</NavLink>
-                <NavLink to="/admin/settings" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Admin Space</NavLink>
-                <NavLink to="/admin/analytics" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Analytics</NavLink>
-                <NavLink to="/admin/payments" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Payment Logs</NavLink>
+                <NavLink to="/admin/dashboard" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Admin Space</NavLink>
             </nav>
 
             {/* Search & Profile */}
             <div className="flex items-center gap-4">
-                 <div className="hidden md:flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-full">
-                    <IoSearch className="text-slate-400"/>
-                    <input type="text" placeholder="Search Order ID..." className="bg-transparent text-sm focus:outline-none w-48"/>
-                 </div>
-                 <div className="w-9 h-9 bg-slate-900 rounded-full text-white flex items-center justify-center font-bold text-sm">A</div>
+                <div
+                          onClick={userState ? ()=>{logout()} : () => { }}
+                          className="flex flex-col items-center gap-1">
+                          <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 border border-white shadow-sm">
+                            {userState ? <CiLogout className="w-5 h-5" /> : <FiUserX className="w-5 h-5" />}
+                          </div>
+                          <span className="text-[15px] font-bold text-slate-900">
+                            {userState ? "LogOut" : ""}
+                          </span>
+                        </div>
             </div>
         </div>
       </header>
@@ -46,7 +51,8 @@ const AdminHeaderAndNav = ()=>{
 
           {/* 1. Current Orders (Home) */}
           <NavLink
-            to={"/admin/dashboard"}
+            to={"/admin/"}
+            end
             className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? "text-orange-500" : "hover:text-white transition"}`}>
             <div className="relative">
               <IoReceiptOutline className="h-6 w-6" />
@@ -91,31 +97,12 @@ const AdminHeaderAndNav = ()=>{
 
           {/* 5. Admin Space */}
           <NavLink
-            to={"/admin/settings"}
+            to={"/admin/dashboard"}
             className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? "text-orange-500" : "hover:text-white transition"}`}>
             <div className="relative">
                <IoSettingsOutline className="w-6 h-6" />
             </div>
             <span className="text-[10px] font-medium">Admin</span>
-          </NavLink>
-
-          {/* 6. Analytics */}
-          <NavLink
-            to={"/admin/analytics"}
-            className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? "text-orange-500" : "hover:text-white transition"}`}>
-            <div className="relative">
-              <IoStatsChartOutline className="w-6 h-6" />
-            </div>
-            <span className="text-[10px] font-medium">Stats</span>
-          </NavLink>
-          {/* 7. Payment Logs */}
-          <NavLink
-            to={"/admin/payments"}
-            className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? "text-orange-500" : "hover:text-white transition"}`}>
-            <div className="relative">
-              <IoWalletOutline className="w-6 h-6" />
-            </div>
-            <span className="text-[10px] font-medium">Logs</span>
           </NavLink>
 
         </div>

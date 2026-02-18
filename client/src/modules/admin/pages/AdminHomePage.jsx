@@ -128,9 +128,7 @@ const AdminHomePage = () => {
 
       </main>
 
-      {/* =======================
-          MOBILE NAVIGATION (Bottom Sticky)
-         ======================= */}
+      
      </>
 
   );

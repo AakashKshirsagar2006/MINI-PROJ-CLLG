@@ -15,6 +15,7 @@ const orderRouter = require('./routes/order-router');
 const protectedOrderRouter = require('./routes/order-router-protected');
 const startCronJobs = require('./cron/order-cleanup');
 const analyticsRouter = require('./routes/analytics-router');
+const adminRouter = require('./routes/admin-action-router');
 const app = express();
 
 
@@ -27,6 +28,8 @@ app.use(cors({
 app.use("/webhook", require("./routes/razorpay-webhook"));
 app.use(express.json())
 app.use(express.urlencoded({extended:true}));
+//app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static('uploads')); // img ke liye static folder serve krne ke liye
 
 app.use(session({
   name: 'college_canteen.sid',
@@ -50,6 +53,7 @@ app.use(session({
   }
 }));
 
+// === ROUTES ===
 
 app.use('/auth',authRouter)
 app.use(foodItemsRouter);
@@ -59,6 +63,7 @@ app.use(cartRouter);
 app.use('/orders',orderRouter);
 app.use("/payments", require("./routes/payment-router"));
 app.use("/admin", analyticsRouter);
+app.use('/admin', adminRouter); // added for admin actions like stock modification and adding food items
 app.use('/protected',protectedOrderRouter);
 mongoose.connect(process.env.MONGO_URI).then(()=>{
 startCronJobs();
