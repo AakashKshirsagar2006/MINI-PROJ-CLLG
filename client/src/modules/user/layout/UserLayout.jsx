@@ -10,7 +10,6 @@ import { OrderProvider } from "../../../shared/store/order-context";
 const UserLayout = () => (
   <>
   <FoodItemsContextProvider>
-  
   <CartProvider>
     <OrderProvider>
   <FoodCategoryContextProvider>

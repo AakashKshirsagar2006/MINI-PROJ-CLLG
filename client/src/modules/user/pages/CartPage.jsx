@@ -31,7 +31,6 @@ const { orderDetails} = useOrder();
         <CartFoodItemQtyMng />
       )
 )
-
           }
            
    </>

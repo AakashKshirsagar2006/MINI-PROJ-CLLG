@@ -52,7 +52,7 @@ function fuzzySearch(query, dataset, similarityThreshold, searchOption) {
 
                 score = Math.max(levSim, commonBoost);
                 
-                // LOGIC FIX: Changed second condition to 'includes'
+               
                 if (normalizedName.startsWith(normalizedQuery)) score += 15;
                 else if (normalizedName.includes(normalizedQuery)) score += 10; 
             } else {

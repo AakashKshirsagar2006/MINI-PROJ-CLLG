@@ -22,6 +22,13 @@ const FoodItemsContextProvider = ({children}) => {
 
   }, []);
 
+  const bestSellers = foodItems.filter(item =>[ "best seller", "bestseller"].includes(item.tag?.toLowerCase().trim()) );
+
+  const todaysSpecial = foodItems.filter(item =>{
+    return (["today's special", "todays special"].includes(item.tag?.trim().toLowerCase())||[ "today's special", "todays special"].includes(item.type?.trim().toLowerCase()) )
+  });
+
+
   const foodItemsByCategory = {};
   
   // Initialize categories
@@ -60,6 +67,8 @@ const FoodItemsContextProvider = ({children}) => {
   const value = useMemo(() => ({
     foodItems,
     foodItemsByCategory,
+    bestSellers,
+    todaysSpecial,
     foodCategories,
     dynamicSearchFilteration
   }), [foodItems, foodCategories]); // Added foodCategories to dependency array

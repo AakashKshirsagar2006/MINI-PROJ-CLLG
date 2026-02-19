@@ -21,7 +21,6 @@ import useAuth from "../../../shared/hooks/useAuth";
  
 const HeaderAndNav = () => {
   const { totalQty } = useCart();
-  const navigate = useNavigate()
   
   const { userState, logout } = useAuth();
 

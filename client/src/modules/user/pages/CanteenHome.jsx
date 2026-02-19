@@ -12,8 +12,9 @@ import { AuthContext } from '../../../shared/store/auth-context';
 import Footer from '../components/Footer';
 
 const CanteenHome = () => {
-  const {user} = useContext(AuthContext);
-  const { foodItemsByCategory, foodCategories, foodItems } = useFoodItems();
+  const { userState: user } = useContext(AuthContext);
+  const { foodItemsByCategory, foodCategories, foodItems, bestSellers, todaysSpecial } = useFoodItems();
+  console.log(todaysSpecial);
   const { categoryState, setCategoryState } = useContext(FoodCategoryContext);
 
   if(user){
@@ -40,7 +41,7 @@ const CanteenHome = () => {
           -------------------------------------------------- 
         */}
         <HomePageHero />
-        <CategorySelector></CategorySelector>
+        
 
         {/* --------------------------------------------------
           COMPONENT: FOOD CAROUSEL (Best Sellers)
@@ -48,13 +49,57 @@ const CanteenHome = () => {
         */}
         <section>
           <div className="flex justify-between items-center mb-6 px-2">
-            <h2 className="text-2xl font-serif font-bold text-slate-900">Best Sellers 🔥</h2>
-            <a href="#" className="text-sm font-bold text-orange-600 hover:underline">View All</a>
+            <h2 className="text-2xl font-serif font-bold text-slate-900">Todays Special 🔥</h2>
+            
           </div>
 
           <div className="flex overflow-x-auto gap-6 pb-8 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory no-scrollbar">
             {
-              categoryState == "All Items" ? foodItems.map(foodItem => (
+               (
+                todaysSpecial.length>0 ?
+                  todaysSpecial.map(foodItem => (
+                    <FoodItemCard
+                      key={foodItem._id.toString()}
+                      foodItem={foodItem}
+                    />)):<NoFoodMessage variant="carousel"/>
+                 )
+            }
+
+          </div>
+        </section>
+
+        <section>
+          <div className="flex justify-between items-center mb-6 px-2">
+            <h2 className="text-2xl font-serif font-bold text-slate-900">Best Sellers 🔥</h2>
+            
+          </div>
+
+          <div className="flex overflow-x-auto gap-6 pb-8 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory no-scrollbar">
+            {
+              bestSellers.length>0?bestSellers.map(foodItem => (
+                <FoodItemCard
+                  key={foodItem._id.toString()}
+                  foodItem={foodItem}
+                 
+                />)):(<NoFoodMessage variant="carousel"/>
+                 )
+            }
+
+          </div>
+        </section>
+
+      
+      
+      <CategorySelector></CategorySelector>
+       <section>
+          <div className="flex justify-between items-center mb-6 px-2">
+            <h2 className="text-2xl font-serif font-bold text-slate-900">Quick Menue</h2>
+            <a href="/menu" className="text-sm font-bold text-orange-600 hover:underline">View All</a>
+          </div>
+
+          <div className="flex overflow-x-auto gap-6 pb-8 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory no-scrollbar">
+            {
+              categoryState == "All Items" ? foodItems.slice(0,10).map(foodItem => (
                 <FoodItemCard
                   key={foodItem._id.toString()}
                   foodItem={foodItem}
