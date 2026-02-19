@@ -6,12 +6,17 @@ import adminRoutes from "./admin.routes.jsx";
 import authRoutes from "./auth.routes.jsx";
 import staffRoutes from "./staff.routes.jsx";
 import NotFoundPage from "../modules/user/pages/404NotFound.jsx";
+import ScrollToTop from "../shared/components/ScrollOnTop.jsx";
 
 
 
 const router = createBrowserRouter([
   {
-    element: <App />, 
+    element: 
+    <ScrollToTop>
+    <App />
+    </ScrollToTop>
+    , 
     children: [
       userRoutes,
       adminRoutes,

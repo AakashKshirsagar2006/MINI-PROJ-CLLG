@@ -286,6 +286,7 @@
 // };
 import { useReducer, useMemo, createContext, useContext, useEffect, useState } from "react";
 import { useCart } from "./cart-context";
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const OrderContext = createContext(null);
 
@@ -348,7 +349,7 @@ export const OrderProvider = ({ children }) => {
   // ==========================================
   const verifyPayment = async (response, orderId) => {
     try {
-      const verifyRes = await fetch("http://localhost:3000/payments/verify", {
+      const verifyRes = await fetch(baseURL+"/payments/verify", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -380,7 +381,7 @@ export const OrderProvider = ({ children }) => {
   const fetchOrders = async () => {
     // Silent fetch (don't set global loading to avoid UI flicker during polling)
     try {
-      const res = await fetch("http://localhost:3000/orders/my-orders", {
+      const res = await fetch(baseURL+"/orders/my-orders", {
         method: "GET",
         credentials: "include"
       });
@@ -406,7 +407,7 @@ export const OrderProvider = ({ children }) => {
     dispatchOrderState({ type: "LOADING" });
     
     try {
-      const res = await fetch("http://localhost:3000/orders/create", {
+      const res = await fetch(baseURL+"/orders/create", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -492,7 +493,7 @@ export const OrderProvider = ({ children }) => {
   const cancelOrder = async (orderID) => {
     dispatchOrderState({ type: "LOADING" });
     try {
-      const res = await fetch(`http://localhost:3000/orders/cancel`, {
+      const res = await fetch(`${baseURL}/orders/cancel`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId: orderID }),

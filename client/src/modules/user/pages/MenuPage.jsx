@@ -7,6 +7,7 @@ import { FoodCategoryContext } from '../../../shared/store/category-context-stor
 import { useCart } from '../../../shared/store/cart-context';
 import { useFoodItems } from '../../../shared/hooks/useFoodItems';
 import NoFoodMessage from '../components/NoFoodMessage';
+import Footer from '../components/Footer';
 
 const MenuPage = () => {
   // Mock state for category selection
@@ -19,6 +20,7 @@ const MenuPage = () => {
   const { categoryState} = useContext(FoodCategoryContext);
 
   return (
+    <>
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-24 md:pb-0">
 
       {/* ================================================================
@@ -96,6 +98,8 @@ const MenuPage = () => {
       </main>
 
     </div>
+     
+    </>
   );
 };
 

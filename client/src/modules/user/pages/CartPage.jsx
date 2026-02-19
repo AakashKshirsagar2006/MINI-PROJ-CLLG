@@ -4,6 +4,7 @@ import { useCart } from "../../../shared/store/cart-context";
 import PlainMessage from "../../../shared/components/PlainMessage";
 import { useOrder } from "../../../shared/store/order-context";
 import CartFoodItemQtyMng from "../components/CartFoodQtyMng";
+import Footer from "../components/Footer";
 
 const CartPage = () => {
   const {userState} = useContext(AuthContext);
@@ -32,6 +33,7 @@ const { orderDetails} = useOrder();
 )
 
           }
+           
    </>
   );
 };

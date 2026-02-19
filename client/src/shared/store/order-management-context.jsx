@@ -1,7 +1,7 @@
 import { useEffect, useReducer, createContext, useMemo } from "react";
 
 // 1. URL FIX
-const baseURL = "http://localhost:3000";
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 export const OrderManagementContext = createContext(null);
 

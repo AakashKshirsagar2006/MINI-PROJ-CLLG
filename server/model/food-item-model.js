@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const foodItemSchema = new mongoose.Schema({
+  itemUID: {
+    type: String,
+    required:true,
+    trim: true
+  },
   name: {
     type: String,
     required:true,

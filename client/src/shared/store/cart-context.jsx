@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useReducer, useMemo, useState } from "react";
 import { AuthContext } from "./auth-context";
-
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 const CartContext = createContext(null);
 
 const initialState = {
@@ -146,7 +146,7 @@ export const CartProvider = ({ children }) => {
       }
     try {
       dispatchCart({ type: "LOADING" });
-      const res = await fetch("http://localhost:3000/cart/get", {
+      const res = await fetch(baseURL+"/cart/get", {
         method: "GET",
         credentials: "include"
       });
@@ -182,7 +182,7 @@ export const CartProvider = ({ children }) => {
     console.log("Adding to cart:", itemID);
     try {
       dispatchCart({ type: "LOADING" });
-      const res = await fetch("http://localhost:3000/cart/add", {
+      const res = await fetch(baseURL+"/cart/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -201,7 +201,7 @@ export const CartProvider = ({ children }) => {
     try {
       dispatchCart({ type: "LOADING" });
       const res = await fetch(
-        `http://localhost:3000/cart/remove/${foodItemID}`,
+        `${baseURL}/cart/remove/${foodItemID}`,
         { method: "DELETE", credentials: "include" }
       );
       const data = await res.json();
@@ -216,7 +216,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = async () => {
     dispatchCart({ type: "LOADING" });
     try {
-      const res = await fetch("http://localhost:3000/cart/clear", {
+      const res = await fetch(baseURL+"/cart/clear", {
         method: "DELETE",
         credentials: "include"
       });

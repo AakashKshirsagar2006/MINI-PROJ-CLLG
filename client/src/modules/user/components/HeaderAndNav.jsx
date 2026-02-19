@@ -16,31 +16,16 @@ import { AuthContext } from "../../../shared/store/auth-context";
 import { useCart } from "../../../shared/store/cart-context";
 
 import { useOrder } from "../../../shared/store/order-context";
-
+import useAuth from "../../../shared/hooks/useAuth";
 
  
 const HeaderAndNav = () => {
   const { totalQty } = useCart();
   const navigate = useNavigate()
+  
+  const { userState, logout } = useAuth();
 
-  const { userState, setUserState } = useContext(AuthContext);
 
-const Logout = async () => {
-    const res = await fetch("http://localhost:3000/auth/logout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", },
-      body: JSON.stringify({ user: userState }),
-      credentials: "include"
-    });
-
-    if (!res.ok) {
-      const { errors } = await res.json();
-      console.log(errors);
-      return;
-    }
-    setUserState(null);
-    navigate('/')
-  }
 
   const {orderDetails} = useOrder();
 
@@ -113,7 +98,7 @@ const Logout = async () => {
         {/* User Actions */}
         <div className="flex items-center gap-6">
           <div
-            onClick={userState ? Logout : () => { }}
+            onClick={userState ? logout : () => { }}
             className="flex flex-col items-center gap-1 cursor-pointer group">
             {/* SIgn Container */}
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-600 transition group-hover:bg-orange-100 group-hover:text-orange-600 group-hover:ring-2 group-hover:ring-orange-200">
@@ -144,7 +129,7 @@ const Logout = async () => {
 
         {/* Right Side: Profile (Icon + Name) */}
         <div
-          onClick={userState ? Logout : () => { }}
+          onClick={userState ? logout : () => { }}
           className="flex flex-col items-center gap-1">
           <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 border border-white shadow-sm">
             {userState ? <CiLogout className="w-5 h-5" /> : <FiUserX className="w-5 h-5" />}

@@ -211,6 +211,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../shared/store/auth-context";
 import { useNavigate } from "react-router-dom";
 import PlainMessage from "../../../shared/components/PlainMessage";
+import useAuth from "../../../shared/hooks/useAuth";
 import { 
   IoLogOutOutline, 
   IoHelpCircleOutline, 
@@ -218,6 +219,7 @@ import {
   IoWalletOutline,
   IoReceiptOutline
 } from "react-icons/io5";
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -226,20 +228,14 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
 
   // --- 1. LOGOUT LOGIC ---
-  const Logout = async () => {
-    await fetch("http://localhost:3000/auth/logout", {
-      method: "POST",
-      credentials: "include"
-    });
-    setUserState(null);
-    navigate("/");
-  };
+  const {logout} = useAuth();
+  
 
   // --- 2. FETCH REAL STATS ---
   useEffect(() => {
     if(!userState) return;
 
-    fetch("http://localhost:3000/orders/stats", {
+    fetch(baseURL+"/orders/stats", {
         method: "GET",
         credentials: "include"
     })
@@ -376,7 +372,7 @@ const ProfilePage = () => {
 
                 {/* 3. LOGOUT */}
                 <button
-                    onClick={Logout}
+                    onClick={logout}
                     className="flex w-full items-center justify-center gap-3 bg-white px-6 py-4 rounded-full border border-red-100 shadow-sm hover:border-red-500 hover:shadow-md hover:shadow-red-100/50 hover:-translate-y-1 transition-all duration-300 group">
                     <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition shrink-0">
                         <IoLogOutOutline />
@@ -391,6 +387,7 @@ const ProfilePage = () => {
 
     </div>
     )}
+     
     </>
   );
 };

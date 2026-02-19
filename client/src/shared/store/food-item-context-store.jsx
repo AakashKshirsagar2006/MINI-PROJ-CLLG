@@ -4,7 +4,7 @@ import fuzzySearch from "../utilities/string-matching-algorithm";
 export const FoodItemsContext = createContext(null);
 
 // SAFETY FIX: Hardcoded URL
-const baseURL = "http://localhost:3000";
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const FoodItemsContextProvider = ({children}) => {
   

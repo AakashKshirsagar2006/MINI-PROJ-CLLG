@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { createContext } from "react";
 import HomeLoader from "../components/HomeLoader";
-
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 export const AuthContext = createContext({userState:"", setUserState: ()=>{}});
 
  
@@ -11,9 +11,18 @@ const AuthContextProvider = ({children})=>{
   const [userState, setUserState] = useState(null);
   const [loadingState, setLoadingState] = useState(true);
 
+
+  const logout = async () => {
+    await fetch(baseURL+"/auth/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+    setUserState(null);
+    navigate("/");
+  };
   useEffect( ()=>{
        console.log("Fetching user in use effect");
-       fetch("http://localhost:3000/auth/recognize-me",{
+       fetch(baseURL+"/auth/recognize-me",{
           credentials: "include",
         }).then(res=>{
           if(!res.ok){
@@ -39,7 +48,7 @@ const AuthContextProvider = ({children})=>{
   }
   else
   return(
-    <AuthContext.Provider value={{userState, setUserState}}>
+    <AuthContext.Provider value={{userState, setUserState, logout}}>
       {children}
     </AuthContext.Provider>
   )

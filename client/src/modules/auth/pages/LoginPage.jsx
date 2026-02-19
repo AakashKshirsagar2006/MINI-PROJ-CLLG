@@ -6,6 +6,7 @@ import { useRef } from 'react';
 import { useContext } from 'react';
 import {useNavigate} from 'react-router-dom';
 import PlainMessage from '../../../shared/components/PlainMessage';
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 
 
@@ -53,7 +54,7 @@ const LoginPage = () => {
 
             console.log(messageBody);
 
-          const res = await fetch("http://localhost:3000/auth/login",{
+          const res = await fetch(baseURL+"/auth/login",{
             method:"POST",
             credentials:"include",
             headers:{ "Content-Type": "application/json"},

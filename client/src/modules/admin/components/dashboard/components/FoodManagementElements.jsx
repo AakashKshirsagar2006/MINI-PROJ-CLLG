@@ -4,7 +4,7 @@ import { useFoodItems } from "../../../../../shared/hooks/useFoodItems"; // We w
 import { IoAdd, IoCloudUploadOutline, IoCheckmarkCircle, IoAlertCircle } from "react-icons/io5";
 
 // SAFETY FIX: Hardcoded URL for stability
-const baseURL = "http://localhost:3000";
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 // --- 1. Reusable Popup Component ---
 const NotificationPopup = ({ show, message, type }) => {

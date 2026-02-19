@@ -9,6 +9,7 @@ import HomePageHero from '../components/HomePageHero';
 import { useFoodItems } from '../../../shared/hooks/useFoodItems';
 import NoFoodMessage from '../components/NoFoodMessage';
 import { AuthContext } from '../../../shared/store/auth-context';
+import Footer from '../components/Footer';
 
 const CanteenHome = () => {
   const {user} = useContext(AuthContext);
@@ -72,6 +73,8 @@ const CanteenHome = () => {
         </section>
 
       </main>
+
+       
     </>
   );
 };

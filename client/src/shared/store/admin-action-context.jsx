@@ -1,7 +1,7 @@
 import { createContext, useState } from "react";
 
 // MATCHING YOUR EXISTING HARDCODED URL
-const baseURL = "http://localhost:3000"; 
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL; 
 
 export const AdminActionContext = createContext(null);
 

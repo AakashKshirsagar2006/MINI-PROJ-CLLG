@@ -5,7 +5,7 @@ import {useNavigate} from 'react-router-dom';
 import EmailFormComponent from '../components/ResetPassForms/Email';
 import OTPFormComponent from '../components/ResetPassForms/OTP';
 import ResetPassFormComponent from '../components/ResetPassForms/ResetPass';
-
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 
 const ResetPasswordPage = () => {
@@ -58,7 +58,7 @@ const ResetPasswordPage = () => {
             }
           
             try{
-          const res = await fetch("http://localhost:3000/auth/reset-password",{
+          const res = await fetch(baseURL+"/auth/reset-password",{
             method:"POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(messageBody),
@@ -96,7 +96,7 @@ const ResetPasswordPage = () => {
       }
 
       try{
-          const res = await fetch("http://localhost:3000/auth/reset-password/reset-code",{
+          const res = await fetch(baseURL+"/auth/reset-password/reset-code",{
             method:"POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(messageBody),
@@ -135,7 +135,7 @@ const ResetPasswordPage = () => {
        }
 
       try{
-          const res = await fetch("http://localhost:3000/auth/reset-password/update-password",{
+          const res = await fetch(baseURL+"/auth/reset-password/update-password",{
             method:"POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(messageBody),

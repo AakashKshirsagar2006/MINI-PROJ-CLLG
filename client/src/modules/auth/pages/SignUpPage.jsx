@@ -8,6 +8,7 @@ import AuthLeftDesktopVisual from '../components/AuthLeftDesktopVisuals';
 import { useContext } from 'react';
 import { AuthContext } from '../../../shared/store/auth-context';
 import PlainMessage from '../../../shared/components/PlainMessage';
+const baeURL = import.meta.env.VITE_SERVER_BASE_URL;
 const SignupPage = () => {
 
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const SignupPage = () => {
 
 
     try {
-      const res = await fetch("http://localhost:3000/auth/signup",
+      const res = await fetch(baeURL+"/auth/signup",
         {
           method: "POST",              // GET, POST, PUT, DELETE, etc.
           headers: {
@@ -100,7 +101,7 @@ const SignupPage = () => {
     e.preventDefault();
     const data = { otp: otp.current.value }
     try {
-      const res = await fetch("http://localhost:3000/auth/signup/validate-otp", {
+      const res = await fetch(baeURL+"/auth/signup/validate-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

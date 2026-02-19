@@ -6,7 +6,8 @@ import { useContext, useEffect, useState, useCallback } from "react";
 import CurrentOrderCard from "../components/CurrentOrderCard";
 import OrderHistoryCard from "../components/OrderHistoryCard";
 import PlainMessage from "../../../shared/components/PlainMessage";
-
+import Footer from "../components/Footer";
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 const OrdersPage = () => {
   const { userState } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -31,13 +32,13 @@ const OrdersPage = () => {
     if (!userState) return;
 
     // A. Fetch Active Orders
-    fetch("http://localhost:3000/orders/active-orders", { method: "GET", credentials: "include" })
+    fetch(baseURL+"/orders/active-orders", { method: "GET", credentials: "include" })
       .then((res) => res.json())
       .then(({ activeOrders }) => setCurrentOrders(activeOrders || []))
       .catch((err) => console.log(err));
 
     // B. Fetch Past Orders
-    fetch("http://localhost:3000/orders/past-orders", { method: "GET", credentials: "include" })
+    fetch(baseURL+"/orders/past-orders", { method: "GET", credentials: "include" })
       .then((res) => res.json())
       .then(({ pastOrders }) => {
         setPastOrders(pastOrders || []);
@@ -76,6 +77,7 @@ const OrdersPage = () => {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-24">
       <main className="max-w-8xl mx-auto px-4 md:px-10 pt-24 pb-6 space-y-12">
         
@@ -182,6 +184,8 @@ const OrdersPage = () => {
         </section>
       </main>
     </div>
+     
+    </>
   );
 };
 
