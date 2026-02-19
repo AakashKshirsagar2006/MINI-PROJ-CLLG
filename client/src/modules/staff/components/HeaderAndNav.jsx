@@ -6,13 +6,17 @@ import {
   IoSearchOutline // Added a specific search icon for clarity
 } from "react-icons/io5";
 import { useState } from "react";
+import useAuth from "../../../shared/hooks/useAuth";
+import { FiUserX } from "react-icons/fi";
+import { CiLogout } from "react-icons/ci";
 
 const HeaderAndNav = ({ currentOrdersState, setCurrentOrdersState }) => {
-  
+  const {userState,logout} = useAuth();
   const [filter, setFilter] = useState("");
   
   // Helper function for button styling to keep JSX clean
   const getDesktopButtonClass = (stateName) => {
+    
     const isActive = currentOrdersState === stateName;
     return `px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border ${
       isActive
@@ -60,19 +64,19 @@ const HeaderAndNav = ({ currentOrdersState, setCurrentOrdersState }) => {
             </nav>
 
             {/* Desktop Search & Profile */}
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-full border border-slate-200">
-                <IoSearchOutline className="text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search Order ID..."
-                  className="bg-transparent text-sm focus:outline-none w-48 text-slate-700 placeholder:text-slate-400"
-                />
-              </div>
-              <div className="w-9 h-9 bg-slate-900 rounded-full text-white flex items-center justify-center font-bold text-sm shadow-md">
-                L
-              </div>
-            </div>
+             {/* Search & Profile */}
+                        <div className="flex items-center gap-4">
+                            <div
+                                      onClick={userState ? ()=>{logout()} : () => { }}
+                                      className="flex flex-col items-center gap-1">
+                                      <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 border border-white shadow-sm">
+                                        {userState ? <CiLogout className="w-5 h-5" /> : <FiUserX className="w-5 h-5" />}
+                                      </div>
+                                      <span className="text-[15px] font-bold text-slate-900">
+                                        {userState ? "LogOut" : ""}
+                                      </span>
+                                    </div>
+                        </div>
           </div>
 
           {/* 2. MOBILE SEARCH BAR (Visible only on mobile, inside sticky header) */}
