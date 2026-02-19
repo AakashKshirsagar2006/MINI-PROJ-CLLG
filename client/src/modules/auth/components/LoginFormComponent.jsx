@@ -87,7 +87,7 @@ const LoginFormComponent = ({role, setRole, onSubmitHandler, userIdRef, password
                 <div className="space-y-1">
                     <div className="flex justify-between">
                         <label className="text-sm font-semibold text-slate-700">Password</label>
-                        <Link to="/reset-password" className="text-xs text-orange-600 font-bold hover:underline">Forgot Password?</Link>
+                        <Link to="/auth/reset-password" className="text-xs text-orange-600 font-bold hover:underline">Forgot Password?</Link>
                     </div>
                     <input 
                         ref={passwordRef}
@@ -105,7 +105,7 @@ const LoginFormComponent = ({role, setRole, onSubmitHandler, userIdRef, password
             {role === 'common' && (
                 <p className="text-center text-sm text-slate-500">
                     New to campus? 
-                    <Link to ="/signup" className="font-bold text-orange-600 hover:text-orange-700 ml-1 transition">Create an account</Link>
+                    <Link to ="/auth/signup" className="font-bold text-orange-600 hover:text-orange-700 ml-1 transition">Create an account</Link>
                 </p>
             )}
             

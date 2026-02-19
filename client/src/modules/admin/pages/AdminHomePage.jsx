@@ -10,7 +10,7 @@ import PlainMessageAdminStaff from '../../../shared/components/PlainMessageAdmin
 
 const AdminHomePage = () => {
 
-  const {userState, fetchActiveOrders} = useAuth();
+  const {userState} = useAuth();
   const {pending, preparing, ready} = useOrderManagement();
   const [orderTypeState, setOrderTypeState] = useState("PENDING");
   const navigate = useNavigate();

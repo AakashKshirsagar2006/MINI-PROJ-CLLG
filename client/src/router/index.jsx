@@ -1,29 +1,39 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App.jsx";
+import { ProtectedRoute } from "../shared/store/auth-context.jsx";
 
 import userRoutes from "./user.routes.jsx";
 import adminRoutes from "./admin.routes.jsx";
-import authRoutes from "./auth.routes.jsx";
 import staffRoutes from "./staff.routes.jsx";
 import NotFoundPage from "../modules/user/pages/404NotFound.jsx";
 import ScrollToTop from "../shared/components/ScrollOnTop.jsx";
 
-
-
 const router = createBrowserRouter([
   {
-    element: 
-    <ScrollToTop>
-    <App />
-    </ScrollToTop>
-    , 
+    element: (
+      <ScrollToTop>
+        <App />
+      </ScrollToTop>
+    ),
     children: [
-      userRoutes,
-      adminRoutes,
-      staffRoutes,
-      authRoutes,
       
-      { path: "*", element: <NotFoundPage/> },
+      userRoutes, 
+
+      // 2. ADMIN PROTECTED ROUTES
+      {
+        element: <ProtectedRoute allowedRoles={['admin']} />,
+        // The routes go here in the route object, NOT inside the element prop
+        children: Array.isArray(adminRoutes) ? adminRoutes : [adminRoutes], 
+      },
+
+      // 3. STAFF PROTECTED ROUTES
+      {
+        element: <ProtectedRoute allowedRoles={['staff', 'admin']} />,
+        children: Array.isArray(staffRoutes) ? staffRoutes : [staffRoutes],
+      },
+
+      // 4. CATCH-ALL (404)
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
 ]);

@@ -7,11 +7,9 @@ import StaffMainPage from "../pages/StaffMainPage"
 
 const StaffLayout = ()=>{
   return (
-    <AuthContextProvider>
-      <OrderManagementProvider>
+  <OrderManagementProvider>
    <StaffMainPage/>
    </OrderManagementProvider>
-    </AuthContextProvider>
   )
 }
 

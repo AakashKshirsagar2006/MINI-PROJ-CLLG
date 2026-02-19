@@ -16,7 +16,7 @@ const CartFoodItemQtyMng = () => {
           onClick={() => { createOrder(items) }}
           disabled={loading}
           className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-lg shadow-xl shadow-slate-900/20 hover:bg-orange-500 hover:shadow-orange-500/30 transition flex justify-between px-6 items-center group">
-          <span>PAY ₹{totalPrice}</span>
+          <span>Proceed To Checkout ₹{totalPrice}</span>
 
           {/* Proceed to Pay button */}
           <span className="flex items-center gap-2 text-sm font-medium bg-white/10 px-3 py-1 rounded-full group-hover:bg-white/20">
@@ -63,7 +63,7 @@ const CartFoodItemQtyMng = () => {
           </div>
           <div className="my-2 border-t border-dashed border-slate-200"></div>
           <div className="flex justify-between items-center">
-            <span className="font-bold text-slate-900 text-lg">To Pay</span>
+            <span className="font-bold text-slate-900 text-lg">Proceed To Checkout</span>
             <span className="font-bold text-slate-900 text-xl">₹{totalPrice}</span>
           </div>
         </div>
@@ -75,7 +75,7 @@ const CartFoodItemQtyMng = () => {
              hover:bg-orange-500 transition shadow-xl shadow-slate-900/20 group
              disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-slate-900"
         >
-          <span>{loading ? "Processing..." : "Proceed to Pay"}</span>
+          <span>{loading ? "Processing..." : "Proceed to Chekout"}</span>
           {!loading && (
             <HiArrowNarrowRight className="h-5 w-5" />
           )}

@@ -17,15 +17,15 @@ const CanteenHome = () => {
   console.log(todaysSpecial);
   const { categoryState, setCategoryState } = useContext(FoodCategoryContext);
 
-  if(user){
-    if (user.user_type === 'staff') {
-    return <Navigate to="/staff" replace />;
-  }
+//   if(user){
+//     if (user.user_type === 'staff') {
+//     return <Navigate to="/staff" replace />;
+//   }
 
- if (user.user_type === 'admin') {
-    return <Navigate to="/admin" replace />;
-  }
-  }
+//  if (user.user_type === 'admin') {
+//     return <Navigate to="/admin" replace />;
+//   }
+//   }
   return (
     // MAIN WRAPPER
     

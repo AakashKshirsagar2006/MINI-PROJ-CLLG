@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../shared/store/auth-context";
-import { useOrder } from "../../../shared/store/order-context"; 
-import { IoWarningOutline, IoTimeOutline, IoRefresh } from "react-icons/io5"; 
+import { useOrder } from "../../../shared/store/order-context";
+import { IoWarningOutline, IoTimeOutline, IoRefresh } from "react-icons/io5";
 import { useContext, useEffect, useState, useCallback } from "react";
 import CurrentOrderCard from "../components/CurrentOrderCard";
 import OrderHistoryCard from "../components/OrderHistoryCard";
@@ -11,15 +11,15 @@ const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 const OrdersPage = () => {
   const { userState } = useContext(AuthContext);
   const navigate = useNavigate();
-  
+
   // Get Context Data
   // We use the Context as the 'Source of Truth'
-  const { 
+  const {
     orderDetails, // This is the 'Pending' order (if any)
-    retryPayment, 
-    cancelOrder, 
+    retryPayment,
+    cancelOrder,
     fetchOrders, // The global fetcher
-  } = useOrder(); 
+  } = useOrder();
 
   // Local state for the lists (Active vs Past)
   const [currentOrders, setCurrentOrders] = useState([]);
@@ -32,22 +32,22 @@ const OrdersPage = () => {
     if (!userState) return;
 
     // A. Fetch Active Orders
-    fetch(baseURL+"/orders/active-orders", { method: "GET", credentials: "include" })
+    fetch(baseURL + "/orders/active-orders", { method: "GET", credentials: "include" })
       .then((res) => res.json())
       .then(({ activeOrders }) => setCurrentOrders(activeOrders || []))
       .catch((err) => console.log(err));
 
     // B. Fetch Past Orders
-    fetch(baseURL+"/orders/past-orders", { method: "GET", credentials: "include" })
+    fetch(baseURL + "/orders/past-orders", { method: "GET", credentials: "include" })
       .then((res) => res.json())
       .then(({ pastOrders }) => {
         setPastOrders(pastOrders || []);
         setLoading(false);
       })
       .catch((err) => console.log(err));
-      
-      // C. Also update the Context global state (for the pending card)
-      // fetchOrders(); // <--- CAREFUL: Only call this if truly needed to sync global state
+
+    // C. Also update the Context global state (for the pending card)
+    // fetchOrders(); // <--- CAREFUL: Only call this if truly needed to sync global state
 
   }, [userState]); // Removed 'fetchOrders' dependency to prevent loop
 
@@ -59,10 +59,10 @@ const OrdersPage = () => {
 
     // 2. Set up a 8-second interval (NOT 3s, to reduce load)
     const intervalId = setInterval(() => {
-        // Optimization: Only poll if the tab is visible
-        if (!document.hidden) {
-            loadData();
-        }
+      // Optimization: Only poll if the tab is visible
+      if (!document.hidden) {
+        loadData();
+      }
     }, 8000); // 8000ms = 8 seconds
 
     // 3. Cleanup when component unmounts
@@ -78,13 +78,13 @@ const OrdersPage = () => {
 
   return (
     <>
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-24">
-      <main className="max-w-8xl mx-auto px-4 md:px-10 pt-24 pb-6 space-y-12">
-        
-        {/* ================================================================
-            PENDING PAYMENT CARD (Shows only if status is CREATED)
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-24">
+        <main className="max-w-8xl mx-auto px-4 md:px-10 pt-24 pb-6 space-y-12">
+
+          {/* ================================================================
+            PENDING PAYMENT CARD (Shows only if status is CREATED) Now we moved this section to the cart as checkout page so no need to mess up the things
             ================================================================ */}
-        {orderDetails && orderDetails.status === "CREATED" && (
+          {/* {orderDetails && orderDetails.status === "CREATED" && (
           <section className="w-full md:px-12 lg:px-60">
              <div className="bg-white border border-orange-200 rounded-2xl shadow-lg overflow-hidden relative animate-pulse-slow">
                 <div className="h-1 w-full bg-gradient-to-r from-orange-400 to-red-500"></div>
@@ -129,14 +129,13 @@ const OrdersPage = () => {
                 </div>
              </div>
           </section>
-        )}
+        )} */}
 
-        {/* ACTIVE ORDERS */}
-        <section className="w-full md:px-12 lg:px-60">
-          <div className="flex justify-between items-center mb-4 px-1">
+          {/* ACTIVE ORDERS */}
+          <section className="w-full md:px-12 lg:px-60">
+            {/* <div className="flex justify-between items-center mb-4 px-1">
             <h2 className="text-2xl font-serif font-bold text-slate-900 flex items-center gap-3">
               Current Orders
-              {/* Optional Manual Refresh if Polling is too slow for user preference */}
               <button 
                 onClick={loadData} 
                 title="Refresh Orders"
@@ -144,47 +143,64 @@ const OrdersPage = () => {
                 <IoRefresh className="w-5 h-5"/>
               </button>
             </h2>
-          </div>
+          </div> */}
 
-          <div className="flex flex-col gap-6">
-            {currentOrders.length === 0 ? (
-              <PlainMessage head={"No Active Orders !"} linkTo="Menu" link="/menu">
-                There are no active orders right now. Visit menu page.
-              </PlainMessage>
+            <div className="flex flex-col gap-6">
+              {currentOrders.length === 0 ? (
+                <section className="w-full flex flex-col items-center justify-center text-center py-20 px-4">
+                  {/* Text Section */}
+                  <div className="mb-8 max-w-md">
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-slate-900 mb-2">
+                     No Active Orders
+                    </h2>
+                    <p className="text-slate-500">
+                      There are no active orders at the moment. Please refresh 
+                    </p>
+                  </div>
+
+                  {/* Login Button */}
+                  <button
+                  onClick={loadData}
+                    className="bg-slate-900 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-slate-900/20 hover:bg-orange-600 hover:shadow-orange-500/30 hover:-translate-y-1 transition-all duration-300"
+                  >
+                    Refresh
+                  </button>
+
+                </section>
+              ) : (
+                currentOrders.map((currentOrder) => (
+                  <CurrentOrderCard
+                    key={currentOrder._id.toString()}
+                    activeOrder={currentOrder}
+                  />
+                ))
+              )}
+            </div>
+          </section>
+
+          {/* PAST ORDERS */}
+          <section className="w-full">
+            <div className="flex justify-between items-center mb-4 px-1">
+              <h2 className="text-xl font-serif font-bold text-slate-900">
+                Past Orders
+              </h2>
+            </div>
+
+            {pastOrders.length === 0 && !loading ? (
+              <div className="text-gray-400 text-sm italic px-4">
+                No past orders found.
+              </div>
             ) : (
-              currentOrders.map((currentOrder) => (
-                <CurrentOrderCard
-                  key={currentOrder._id.toString()}
-                  activeOrder={currentOrder}
-                />
-              ))
+              <div className="flex gap-3 overflow-x-auto pb-6 -mx-4 w-[calc(100%+2rem)] px-4 md:w-full md:mx-0 md:px-0 snap-x snap-mandatory no-scrollbar scroll-smooth">
+                {pastOrders.map((order, index) => (
+                  <OrderHistoryCard key={index} order={order} />
+                ))}
+              </div>
             )}
-          </div>
-        </section>
+          </section>
+        </main>
+      </div>
 
-        {/* PAST ORDERS */}
-        <section className="w-full">
-          <div className="flex justify-between items-center mb-4 px-1">
-            <h2 className="text-xl font-serif font-bold text-slate-900">
-              Past Orders
-            </h2>
-          </div>
-
-          {pastOrders.length === 0 && !loading ? (
-            <div className="text-gray-400 text-sm italic px-4">
-              No past orders found.
-            </div>
-          ) : (
-            <div className="flex gap-3 overflow-x-auto pb-6 -mx-4 w-[calc(100%+2rem)] px-4 md:w-full md:mx-0 md:px-0 snap-x snap-mandatory no-scrollbar scroll-smooth">
-              {pastOrders.map((order, index) => (
-                <OrderHistoryCard key={index} order={order} />
-              ))}
-            </div>
-          )}
-        </section>
-      </main>
-    </div>
-     
     </>
   );
 };

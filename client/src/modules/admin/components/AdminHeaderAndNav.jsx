@@ -34,7 +34,7 @@ const {userState, logout} = useAuth();
             <div className="flex items-center gap-4">
                 <div
                           onClick={userState ? ()=>{logout()} : () => { }}
-                          className="flex flex-col items-center gap-1">
+                          className="flex flex-col items-center gap-1 cursor-pointer">
                           <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 border border-white shadow-sm">
                             {userState ? <CiLogout className="w-5 h-5" /> : <FiUserX className="w-5 h-5" />}
                           </div>
