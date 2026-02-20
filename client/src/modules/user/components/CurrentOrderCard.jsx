@@ -26,7 +26,7 @@ const CurrentOrderCard = ({ activeOrder }) => {
   return (
     <>
       {/* Main Card */}
-      <div className="bg-white rounded-[2rem] border border-slate-300 shadow-xl shadow-slate-200/60 overflow-hidden relative">
+      <div className="bg-white rounded-4xl border border-slate-300 shadow-xl shadow-slate-200/60 overflow-hidden relative">
         
 
         <div className="p-6 md:p-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">

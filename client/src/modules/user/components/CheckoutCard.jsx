@@ -5,9 +5,10 @@ import {
   IoReceiptOutline, 
   IoCardOutline 
 } from "react-icons/io5";
+import ExpirationTimer from "./ExpirationTimer";
 const CheckOutCard = ({orderDetails}) =>{
   const { doPayment, cancelOrder } = useOrder();
-
+  console.log("Order Details:",orderDetails);
   return (
     <>
     {/* ================================================================
@@ -32,16 +33,18 @@ const CheckOutCard = ({orderDetails}) =>{
               </div>
 
               {/* Timer Badge - Classy Pill Design */}
-              <div className="flex items-center gap-2 bg-orange-50 border border-orange-100 text-orange-700 px-4 py-2 rounded-full shadow-sm">
+              {/* <div className="flex items-center gap-2 bg-orange-50 border border-orange-100 text-orange-700 px-4 py-2 rounded-full shadow-sm">
                 <IoTimeOutline className="animate-pulse text-lg" />
                 <span className="text-sm font-bold tabular-nums">Expires in 10:00</span>
-              </div>
+              </div> */}
+
+              <ExpirationTimer createdAt={orderDetails.createdAt}/>
             </div>
 
             {/* --- Warning Strip (Subtle) --- */}
             <div className="bg-slate-50 border-b border-slate-100 px-6 py-2 flex items-center gap-2 text-xs font-medium text-slate-500">
               <IoWarningOutline className="text-orange-500 text-base shrink-0" />
-              <span>Note: Availability is real-time. Please checkout to reserve your quantity.</span>
+              <span>Note: Stock availability is real-time. Please check quantities before placing order.</span>
             </div>
 
             {/* --- Main Content Grid --- */}

@@ -11,10 +11,25 @@ const AuthLeftDesktopVisual = ()=>{
         <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-900/40 to-transparent"></div>
         
         <div className="relative z-10 p-16 flex flex-col justify-between h-full">
-          <div className="flex items-center gap-2 text-white">
-            <div className="w-8 h-8 bg-orange-500 rounded-tr-xl rounded-bl-xl flex items-center justify-center font-bold text-lg">H</div>
-            <span className="text-xl font-serif font-bold tracking-tighter">Hungry Pirates.</span>
+    
+          {/* -------------------
+                 Brand Logo 
+          ---------------------*/}
+          <div className="flex items-center gap-3">
+          {/* Circular Image Section */}
+          <div className="relative w-14 h-14 overflow-hidden rounded-full border-2 border-slate-200 shadow-sm p-1.5">
+            <img
+              src="/fcritlogo.png"
+              alt="FCRIT Logo"
+              className="w-50px h-50px object-cover"
+            />
           </div>
+
+          {/* Brand Text */}
+          <span className="text-xl font-serif font-bold tracking-tighter text-white">
+            FCRIT Canteen
+          </span>
+        </div>
           
           <div className="text-white max-w-lg">
             <h2 className="text-4xl font-serif font-bold mb-4">Efficient management, <br/>happy tummies.</h2>

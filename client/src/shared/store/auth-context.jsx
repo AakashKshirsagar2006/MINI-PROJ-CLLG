@@ -39,7 +39,7 @@ const AuthContextProvider = ({ children }) => {
         const res = await fetch(baseURL + "/auth/recognize-me", {
           credentials: "include",
         });
-        
+        //console.log("Inside the fetching user and doing shit thing\n");
         if (!res.ok) throw new Error("Unauthenticated");
         
         const { user } = await res.json();
@@ -50,7 +50,7 @@ const AuthContextProvider = ({ children }) => {
           else if (location.pathname === '/login') navigate("/", { replace: true }); 
         }
       } catch (err) {
-        console.log(err.message);
+        console.log("Needs re-login");
         setUserState(null);
       } finally {
         setLoadingState(false);

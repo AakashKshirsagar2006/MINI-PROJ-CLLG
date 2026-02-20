@@ -2,8 +2,10 @@ import { MdOutlineAdminPanelSettings, MdErrorOutline } from "react-icons/md";
 import { useNavigate, Link } from 'react-router-dom';
 import AuthPageButton from "./AuthPageButton";
 import AuthPageInputField from "./AuthPageInputField";
+import { useNavigate } from "react-router-dom";
 
 const PasswordResetFormComponent = ({onSubmitHandler, emailRef ,passwordRef, rePasswordRef,resetOtpRef, buttonActivity, processErrors, setCurrentPageState})=>{
+    const navigate = useNavigate();
   return(
     
         <div className="w-full max-w-md space-y-8">
@@ -87,7 +89,10 @@ const PasswordResetFormComponent = ({onSubmitHandler, emailRef ,passwordRef, reP
                 activity={buttonActivity} 
                 direction="left" 
                 type="button"
-                onClick={()=>{setCurrentPageState("login")}}
+                onClick={()=>{
+                        //e.preventDefault();
+                        navigate("/login");
+                    }}
                 >Back to Login</AuthPageButton>
                 </div>
 

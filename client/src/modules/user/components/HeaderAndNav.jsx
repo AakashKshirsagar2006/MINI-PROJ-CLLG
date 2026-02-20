@@ -39,12 +39,19 @@ const HeaderAndNav = () => {
       */}
       <header className="hidden md:flex justify-between items-center py-5 px-10 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
         {/* Brand Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-orange-500 rounded-tr-xl rounded-bl-xl flex items-center justify-center text-white font-bold text-lg">
-            H
+        <div className="flex items-center gap-3">
+          {/* Circular Image Section */}
+          <div className="relative w-14 h-14 overflow-hidden rounded-full border-2 border-slate-200 shadow-sm p-1.5">
+            <img
+              src="/fcritlogo.png"
+              alt="FCRIT Logo"
+              className="w-50px h-50px object-cover"
+            />
           </div>
+
+          {/* Brand Text */}
           <span className="text-2xl font-serif font-bold tracking-tighter text-slate-900">
-            Hungry Pirates.
+            FCRIT Canteen
           </span>
         </div>
 
@@ -122,7 +129,7 @@ const HeaderAndNav = () => {
         {/* Left Side: Brand */}
         <div>
           <div className="flex items-center gap-1 text-slate-900 font-bold text-base md:text-lg font-serif">
-            <span>Hungry Pirates</span>
+            <span>FCRIT Canteen</span>
           </div>
         </div>
 

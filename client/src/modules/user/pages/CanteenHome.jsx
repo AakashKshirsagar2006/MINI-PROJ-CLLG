@@ -17,15 +17,7 @@ const CanteenHome = () => {
   console.log(todaysSpecial);
   const { categoryState, setCategoryState } = useContext(FoodCategoryContext);
 
-//   if(user){
-//     if (user.user_type === 'staff') {
-//     return <Navigate to="/staff" replace />;
-//   }
 
-//  if (user.user_type === 'admin') {
-//     return <Navigate to="/admin" replace />;
-//   }
-//   }
   return (
     // MAIN WRAPPER
     
@@ -99,7 +91,7 @@ const CanteenHome = () => {
 
           <div className="flex overflow-x-auto gap-6 pb-8 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory no-scrollbar">
             {
-              categoryState == "All Items" ? foodItems.slice(0,10).map(foodItem => (
+              categoryState == "All Items" ? foodItems.slice(0,30).map(foodItem => (
                 <FoodItemCard
                   key={foodItem._id.toString()}
                   foodItem={foodItem}

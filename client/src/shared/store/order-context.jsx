@@ -286,6 +286,7 @@
 // };
 import { useReducer, useMemo, createContext, useContext, useEffect, useState } from "react";
 import { useCart } from "./cart-context";
+import useAuth from "../hooks/useAuth";
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const OrderContext = createContext(null);
@@ -329,7 +330,7 @@ const orderReducer = (state, action) => {
 
 export const OrderProvider = ({ children }) => {
   const { setCartLoading, clearCart } = useCart();
-  
+  const {userState} = useAuth();
   // 🔄 SIMPLE TRIGGER
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -379,6 +380,7 @@ export const OrderProvider = ({ children }) => {
   // --- FETCH ORDERS ---
   // ==========================================
   const fetchOrders = async () => {
+    if(!userState) return;
     // Silent fetch (don't set global loading to avoid UI flicker during polling)
     try {
       const res = await fetch(baseURL+"/orders/my-orders", {
@@ -398,6 +400,7 @@ export const OrderProvider = ({ children }) => {
   // --- CREATE ORDER (THE CLEAN SLATE LOGIC) ---
   // ==========================================
   const createOrder = async (cartItems) => {
+    if(!userState) return;
     let requestedOrderDetails = [];
     Object.keys(cartItems).forEach(key => {
       requestedOrderDetails.push({ foodItemId: key, qty: cartItems[key].qty });
@@ -431,7 +434,8 @@ export const OrderProvider = ({ children }) => {
       // 2. 🗑️ NUKE THE CART IMMEDIATELY
       await clearCart(); 
       setCartLoading(false); // Stop loading so they see the empty cart/order page
-
+      
+      //NO need for this shit. Now do payment will handle all cases
       // 3. Open Razorpay
       // const options = {
       //   key: import.meta.env.VITE_RAZORPAY_KEY_ID,

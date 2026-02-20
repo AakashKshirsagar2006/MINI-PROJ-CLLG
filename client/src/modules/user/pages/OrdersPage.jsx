@@ -30,7 +30,6 @@ const OrdersPage = () => {
   // We wrap this in useCallback so it doesn't get recreated on every render
   const loadData = useCallback(() => {
     if (!userState) return;
-
     // A. Fetch Active Orders
     fetch(baseURL + "/orders/active-orders", { method: "GET", credentials: "include" })
       .then((res) => res.json())
