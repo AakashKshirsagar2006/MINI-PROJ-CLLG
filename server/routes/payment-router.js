@@ -11,9 +11,9 @@ const router = express.Router();
 // ==========================================
 router.get("/logs", async (req, res) => {
   // 1. Security Check (Uncomment when ready)
-  // if (!req.session.user || req.session.user.user_type !== 'admin') {
-  //   return res.status(401).json({ message: "Unauthorized" });
-  // }
+  if (!req.session.user || req.session.user.user_type !== 'admin') {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
   const { search, type } = req.query; // type = 'payment' or 'refund'
 
@@ -91,8 +91,7 @@ router.post("/verify", async (req, res) => {
     return res.status(404).json({ message: "Order not found" });
   }
 
-  // 👇 THE MAGIC FIX IS HERE 👇
-  // If the webhook already beat us to it, just return success!
+  
   if (order.status === "PAID") {
     console.log("Order was already paid via webhook. Returning 200 OK to frontend.");
     return res.status(200).json({
@@ -101,7 +100,7 @@ router.post("/verify", async (req, res) => {
     });
   }
 
-  // If it's anything else besides CREATED (like FAILED or CANCELLED), block it.
+  
   if (order.status !== "CREATED") {
     return res.status(400).json({ message: "Order cannot be processed" });
   }
@@ -118,7 +117,7 @@ router.post("/verify", async (req, res) => {
     return res.status(400).json({ message: "Payment verification failed" });
   }
 
-  // ✅ PAYMENT VERIFIED BY FRONTEND (Webhook was slow)
+  // PAYMENT VERIFIED BY FRONTEND (Webhook was slow)
   order.status = "PAID";
   order.razorpayPaymentId = razorpay_payment_id;
   order.razorpaySignature = razorpay_signature;
