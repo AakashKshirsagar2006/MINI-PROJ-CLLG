@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import AuthPageInputField from '../AuthPageInputField'
 import AuthPageButton from '../AuthPageButton'
 
-const EmailFormComponent = ({onSubmitHandler, emailRef , buttonActivity, pageErrors,navigateToLogin})=>{
+const EmailFormComponent = ({onSubmitHandler, emailRef , buttonActivity, pageErrors,backNavigation})=>{
   return(
     
         <div className="w-full max-w-md space-y-8">
@@ -61,7 +61,7 @@ const EmailFormComponent = ({onSubmitHandler, emailRef , buttonActivity, pageErr
                 activity={buttonActivity} 
                 direction="left" 
                 type="button"
-                onClick={()=>{navigateToLogin()}}
+                onClick={()=>{backNavigation()}}
                 >Back to Login</AuthPageButton>
                 </div>
 

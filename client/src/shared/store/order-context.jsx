@@ -1,6 +1,7 @@
 
 import { useReducer, useMemo, createContext, useContext, useEffect, useState } from "react";
 import { useCart } from "./cart-context";
+import useAuth from "../hooks/useAuth";
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const OrderContext = createContext(null);
@@ -44,7 +45,7 @@ const orderReducer = (state, action) => {
 
 export const OrderProvider = ({ children }) => {
   const { setCartLoading, clearCart } = useCart();
-  
+  const {userState} = useAuth();
   // 🔄 SIMPLE TRIGGER
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -80,7 +81,7 @@ export const OrderProvider = ({ children }) => {
         throw new Error("Payment verification failed");
       }
 
-      console.log("✅ Verified. Refreshing...");
+      console.log(" Verified. Refreshing...");
       dispatchOrderState({ type: "RESET_ORDER_STATE" });
       triggerRefresh(); // Force update
 
@@ -94,6 +95,7 @@ export const OrderProvider = ({ children }) => {
   // --- FETCH ORDERS ---
   // ==========================================
   const fetchOrders = async () => {
+    if(!userState) return;
     // Silent fetch (don't set global loading to avoid UI flicker during polling)
     try {
       const res = await fetch(baseURL+"/orders/my-orders", {
@@ -113,6 +115,7 @@ export const OrderProvider = ({ children }) => {
   // --- CREATE ORDER (THE CLEAN SLATE LOGIC) ---
   // ==========================================
   const createOrder = async (cartItems) => {
+    if(!userState) return;
     let requestedOrderDetails = [];
     Object.keys(cartItems).forEach(key => {
       requestedOrderDetails.push({ foodItemId: key, qty: cartItems[key].qty });
@@ -146,35 +149,34 @@ export const OrderProvider = ({ children }) => {
       // 2. 🗑️ NUKE THE CART IMMEDIATELY
       await clearCart(); 
       setCartLoading(false); // Stop loading so they see the empty cart/order page
-
+      
+      //NO need for this shit. Now do payment will handle all cases
       // 3. Open Razorpay
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: razorpay.amount,
-        currency: razorpay.currency,
-        name: "College Canteen",
-        description: "Food Order",
-        order_id: razorpay.orderId,
-        handler: async function (response) {
-            setCartLoading(true);
-            await verifyPayment(response, orderDetails._id);
-            setCartLoading(false);
-        },
-        prefill: {
-          name: orderDetails.userName,
-          email: orderDetails.userEmail
-        },
-        theme: { color: "#f97316" },
-        modal: {
-            ondismiss: function() {
-                // If they close, do nothing. Cart is already gone.
-                // Order is already in "Pending" state in context.
-            }
-        }
-      };
+      // const options = {
+      //   key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      //   amount: razorpay.amount,
+      //   currency: razorpay.currency,
+      //   name: "College Canteen",
+      //   description: "Food Order",
+      //   order_id: razorpay.orderId,
+      //   handler: async function (response) {
+      //       setCartLoading(true);
+      //       await verifyPayment(response, orderDetails._id);
+      //       setCartLoading(false);
+      //   },
+      //   prefill: {
+      //     name: orderDetails.userName,
+      //     email: orderDetails.userEmail
+      //   },
+      //   theme: { color: "#f97316" },
+      //   modal: {
+      //       ondismiss: function() {
+      //       }
+      //   }
+      // };
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      // const rzp = new window.Razorpay(options);
+      // rzp.open();
 
     } catch (err) {
       console.log(err.message);
@@ -183,7 +185,7 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
-  const retryPayment = (orderObj) => {
+  const doPayment = (orderObj) => {
       if(!orderObj || !orderObj.razorpayOrderId) return;
       
       const options = {
@@ -234,7 +236,7 @@ export const OrderProvider = ({ children }) => {
     fetchOrders,
     createOrder,
     cancelOrder,
-    retryPayment,
+    doPayment,
     triggerRefresh // Exposed so components can force refresh
   }), [orderState, refreshTrigger]);
 

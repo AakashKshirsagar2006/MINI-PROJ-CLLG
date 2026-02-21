@@ -155,10 +155,10 @@ const SignupPage = () => {
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative">
 
         {/* Mobile Logo (Visible only on small screens) */}
-        <div className="absolute top-6 left-6 flex items-center gap-2 md:hidden">
+        {/* <div className="absolute top-6 left-6 flex items-center gap-2 md:hidden">
           <div className="w-8 h-8 bg-orange-500 rounded-tr-xl rounded-bl-xl flex items-center justify-center text-white font-bold text-lg">C</div>
           <span className="text-xl font-serif font-bold tracking-tighter text-slate-900">Cantina.</span>
-        </div>
+        </div> */}
 
         <div className="w-full max-w-md space-y-8">
 

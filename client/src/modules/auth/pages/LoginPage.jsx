@@ -34,8 +34,6 @@ const LoginPage = () => {
 
   const onSubmitHandler = async ()=>{
     console.log("Inside on submit handeler")
-
-       
         try{
           setActiveLoginButton(false);
          
@@ -76,8 +74,8 @@ const LoginPage = () => {
           setActiveLoginButton(true); 
            
           //Will this navigation approach will work i dont know
-          if(user.user_type=='staff') navigate('/staff');
-          else if(user.user_type==='admin') navigate('/admin');
+          if(user.user_type=='staff') navigate('/staff/');
+          else if(user.user_type==='admin') navigate('/admin/');
           else navigate("/");
         }
         catch(err){
@@ -90,7 +88,7 @@ const LoginPage = () => {
 
   return (
     <>
-    {userState?<PlainMessage head={"Already Logged In !"} linkTo="Home" link="/">You are already Logged In. Logout for new Login</PlainMessage>:
+    {!!(userState)?<PlainMessage head={"Already Logged In !"} linkTo="Home" link="/">You are already Logged In. Logout for new Login</PlainMessage>:
     <div className="min-h-screen flex bg-white font-sans text-slate-800">
 
       {/* ================================================================
@@ -106,13 +104,13 @@ const LoginPage = () => {
       */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative"> 
         {/* Mobile Logo */}
-        <div className="absolute top-6 left-6 flex items-center gap-2 md:hidden">
-            <div className="w-8 h-8 bg-orange-500 rounded-tr-xl rounded-bl-xl flex items-center justify-center text-white font-bold text-lg">C</div>
-            <span className="text-xl font-serif font-bold tracking-tighter text-slate-900">Cantina.</span>
-        </div>
+        {/* <div className="absolute top-6 left-6 flex items-center gap-2 md:hidden">
+            <div className="w-8 h-8 bg-orange-500 rounded-tr-xl rounded-bl-xl flex items-center justify-center text-white font-bold text-lg">HP</div>
+            <span className="text-xl font-serif font-bold tracking-tighter text-slate-900">Hungry Pirates</span>
+        </div> */}
 
 
-        {/* LoginPa?ge */}
+        {/* LoginPage */}
        <LoginFormComponent 
         loginErrors={loginErrors}
         onSubmitHandler={onSubmitHandler}

@@ -7,7 +7,6 @@ import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
    return (
-   <AuthContextProvider>
       <FoodItemsContextProvider>
       <AdminActionContextProvider>
       <OrderManagementProvider>
@@ -18,7 +17,6 @@ const AdminLayout = () => {
       </OrderManagementProvider>
       </AdminActionContextProvider>
       </FoodItemsContextProvider>
-    </AuthContextProvider>
    )
 }
 

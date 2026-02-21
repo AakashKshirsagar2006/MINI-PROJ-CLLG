@@ -37,7 +37,7 @@ const StaffDashBoardPage = ({ orderState }) => {
   
   const { userState } = useAuth();
 
-  if (userState?.user_type !== 'staff') {
+  if (userState?.user_type == 'common') {
     return <PlainMessage head="Unauthorized" linkTo="Home" link="/">Access Restricted</PlainMessage>;
   }
 

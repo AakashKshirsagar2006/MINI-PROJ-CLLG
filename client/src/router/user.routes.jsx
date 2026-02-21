@@ -1,3 +1,6 @@
+import LoginPage from "../modules/auth/pages/LoginPage";
+import ResetPasswordPage from "../modules/auth/pages/ResetPasswordPage";
+import SignupPage from "../modules/auth/pages/SignUpPage";
 import UserLayout from "../modules/user/layout/UserLayout";
 import CanteenHome from "../modules/user/pages/CanteenHome";
 import CartPage from "../modules/user/pages/CartPage";
@@ -9,9 +12,7 @@ import ProfilePage from "../modules/user/pages/ProfilePage";
 
 const userRoutes = {
  path:'/',
- element:
-  
-  <UserLayout/>,
+ element:<UserLayout/>,
 
  children:[
   { 
@@ -31,6 +32,18 @@ const userRoutes = {
   {
     path:'profile',
     element:<ProfilePage/>
+  },
+  {
+    path:'login',
+    element:<LoginPage/>
+  },
+  {
+    path:'signup',
+    element:<SignupPage/>
+  },
+  {
+    path:'reset-password',
+    element:<ResetPasswordPage/>
   }
  ]
 

@@ -1,9 +1,8 @@
 import { useEffect, useReducer, createContext, useMemo } from "react";
+import useAuth from "../hooks/useAuth";
 
 // 1. URL FIX
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
-
-export const OrderManagementContext = createContext(null);
 
 const initialActiveOrderState = {
   pending: [],
@@ -13,6 +12,15 @@ const initialActiveOrderState = {
   loading: false,
   error: null
 }
+
+export const OrderManagementContext = createContext(
+  {
+   ...initialActiveOrderState,
+  processOrder: () => {},
+  fullfillOrder: () => {},
+  fetchActiveOrders: () => {}
+  }
+);
 
 const activeOrderReducer = (state, action) => {
    switch(action.type){
@@ -35,12 +43,16 @@ const activeOrderReducer = (state, action) => {
 }
 
 const OrderManagementProvider = ({children}) => {
+  const {userState} = useAuth();
 
   const [activeOrdersState, dispatchState] = useReducer(activeOrderReducer, initialActiveOrderState);
 
   const fetchActiveOrders = async () => {
+    // dispatchState({type:"LOADING"}); // Commented out to prevent flickering on auto-refresh
+    if(!userState) return; // <-- HIS FIX KEPT HERE
+    
     try {
-      // ✅ CHANGED: /admin to /protected
+      // ✅ CHANGED: /admin to /protected (OUR FIX KEPT HERE)
       const res = await fetch(baseURL + "/protected/active-orders", { 
         method: "GET",
         credentials: "include"
@@ -61,7 +73,7 @@ const OrderManagementProvider = ({children}) => {
   const processOrder = async (orderId, fullfillment_status) => {
      dispatchState({type:"LOADING"});
      try {
-        //  CHANGED: /admin to /protected
+        // ✅ CHANGED: /admin to /protected
         const res = await fetch(baseURL + "/protected/process-order", {
            method: "POST",
            headers: {"Content-Type": "application/json"},
@@ -81,7 +93,7 @@ const OrderManagementProvider = ({children}) => {
   const fullfillOrder = async (orderId, orderOTP) => {
     dispatchState({type:"LOADING"});
     try {
-      // CHANGED: /admin to /protected
+      // ✅ CHANGED: /admin to /protected
       const res = await fetch(baseURL + "/protected/fullfill-order", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -100,16 +112,20 @@ const OrderManagementProvider = ({children}) => {
 
   // Initial Fetch
   useEffect(() => {
+    if(!userState) return;
      fetchActiveOrders();
-  }, []);
+  }, [userState]);
 
-  // Auto-Refresh (Polling) every 15 seconds
+  // FIX 3: Add userState to the dependency array so interval clears on logout
   useEffect(() => {
+    if(!userState) return;
     const intervalId = setInterval(() => {
        fetchActiveOrders();
     }, 15000);
+    
+    // This cleanup function will now properly run when userState becomes null!
     return () => clearInterval(intervalId);
-  }, []);
+  }, [userState]);
   
   const value = useMemo(() => ({
     ...activeOrdersState,
