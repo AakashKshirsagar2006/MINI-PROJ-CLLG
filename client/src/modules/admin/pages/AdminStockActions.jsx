@@ -2,7 +2,7 @@ import FilterAndSearchStock from "../components/FilterAndSearchStock"
 import { useFoodItems } from "../../../shared/hooks/useFoodItems";
 import { useReducer, useState ,useRef, useEffect} from "react";
 import AdminFoodStockCard from "../components/AdminFoodStockCard";
-import fuzzySearch from "../../../shared/utilities/string-matching-algorithm";
+import fuzzySearch from "../../../shared/store/utilities/string-matching-algorithm";
 
 
 const AdminStockActions = ()=>{

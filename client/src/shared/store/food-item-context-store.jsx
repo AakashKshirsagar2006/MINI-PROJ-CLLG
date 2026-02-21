@@ -1,5 +1,5 @@
 import { createContext, useEffect, useMemo, useState } from "react";
-import fuzzySearch from "../utilities/string-matching-algorithm"; 
+import fuzzySearch from "./utilities/string-matching-algorithm"; 
 
 export const FoodItemsContext = createContext(null);
 
@@ -9,7 +9,7 @@ const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 const FoodItemsContextProvider = ({children}) => {
   
   const [foodItems, setFoodItems] = useState([]);
-  const [foodCategories, setFoodCategory] = useState(['All Items','Fast Food', 'Full Meals','Indian Thali', 'Chinese','Italian', 'South Indian', 'Deserts', 'Healthy','Not Available']);
+  const [foodCategories, setFoodCategory] = useState(['All Items','Fast Food', 'Full Meals','Indian Thali', 'Chinese','Italian', 'South Indian', 'Deserts', 'Healthy','Beverages','Not Available']);
 
   useEffect(() => {
     fetch(baseURL + "/food-items")

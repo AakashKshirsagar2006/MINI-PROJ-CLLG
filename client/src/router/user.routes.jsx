@@ -13,7 +13,6 @@ import ProfilePage from "../modules/user/pages/ProfilePage";
 const userRoutes = {
  path:'/',
  element:<UserLayout/>,
-
  children:[
   { 
     index: true,

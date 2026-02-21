@@ -52,8 +52,8 @@ export const AddNewFoodItem = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formData = new FormData(e.target);
+    const formElement = e.currentTarget.form;
+    const formData = new FormData(formElement);
 
     try {
       const response = await fetch(`${baseURL}/admin/add-food-item`, {
@@ -67,7 +67,7 @@ export const AddNewFoodItem = () => {
       if (response.ok) {
         console.log("Success:", data);
         triggerNotification("Item added successfully!", "success");
-        e.target.reset();
+        formElement.reset();
         setImageState(null);
       } else {
         console.error("Server Error:", data);
@@ -201,6 +201,8 @@ export const UpdateFoodItem = ({formState}) => {
   const fileInputRef = useRef(null);
   const uidRef = useRef("");
 
+
+
   // Notification State
   const [notification, setNotification] = useState({ show: false, message: "", type: "success" });
 
@@ -236,8 +238,8 @@ export const UpdateFoodItem = ({formState}) => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-
-    const formData = new FormData(e.target.form);
+    const formElement = e.currentTarget.form;
+    const formData = new FormData(formElement);
     const itemId = itemState._id;
 
     if (!itemId) return;
@@ -253,8 +255,12 @@ export const UpdateFoodItem = ({formState}) => {
       if (response.ok) {
         console.log("Success:", data);
         triggerNotification("Item updated successfully!", "success");
-        e.target.form.reset();
-        setFieldDisabilty(true);
+        
+        setItemState({ veg_nonveg: "", type: "" }); 
+        setImageState(null);
+        formElement.reset(); 
+        setFieldDisabilty(true); 
+        
       } else {
         console.error("Server Error:", data);
         triggerNotification(data.error || "Failed to update item", "error");
@@ -267,7 +273,8 @@ export const UpdateFoodItem = ({formState}) => {
 
   const handleDelete = async (e) => {
     e.preventDefault();
-    const itemId = itemState._id.toString();
+    const formElement = e.currentTarget.form;
+    const itemId = itemState._id?.toString();
     if (!itemId) return;
     try {
       const res = await fetch(baseURL + "/admin/delete-food-item/" + itemId, {
@@ -279,8 +286,13 @@ export const UpdateFoodItem = ({formState}) => {
         throw new Error("Something went wrong");
       }
       triggerNotification("Item deleted successfully", "success");
-      e.target.form.reset();
-      setFieldDisabilty(true);
+      
+     
+      setItemState({ veg_nonveg: "", type: "" }); 
+      setImageState(null); 
+      formElement.reset(); 
+      setFieldDisabilty(true); 
+      
     } catch (err) {
       console.error(err);
       triggerNotification("Failed to delete item", "error");
@@ -322,7 +334,7 @@ export const UpdateFoodItem = ({formState}) => {
           )}
         </div>
 
-        <input disabled={fieldDisability} ref={fileInputRef} type="file" hidden accept="image/*" onChange={handleImageChange} />
+        <input name="image" disabled={fieldDisability} ref={fileInputRef} type="file" hidden accept="image/*" onChange={handleImageChange} />
 
         {/* --- RIGHT COLUMN: INPUT FIELDS --- */}
         <div className="lg:col-span-2 flex flex-col gap-5 justify-between">
@@ -333,6 +345,7 @@ export const UpdateFoodItem = ({formState}) => {
               <input disabled={!fieldDisability}
                 ref={uidRef}
                 type="text"
+                name="itemUID"
                 placeholder="Item UID"
                 className={inputClass} />
             </div>
@@ -381,11 +394,11 @@ export const UpdateFoodItem = ({formState}) => {
               <span className={labelClass}>Type</span>
               <div className="flex bg-slate-50 p-1 rounded-xl border border-transparent">
                 <label className="flex-1 text-center cursor-pointer">
-                  <input onClick={() => setItemState({ ...itemState, veg_nonveg: "Veg" })} checked={itemState.veg_nonveg === "Veg"} disabled={fieldDisability} type="radio" name="veg_nonveg" value="VEG" className="peer hidden" />
+                  <input onClick={() => setItemState({ ...itemState, veg_nonveg: "Veg" })} checked={itemState.veg_nonveg === "Veg"} disabled={fieldDisability} type="radio" name="veg_nonveg" value="Veg" className="peer hidden" />
                   <span className="block py-2 text-xs font-bold text-slate-400 rounded-lg peer-checked:bg-white peer-checked:text-green-600 peer-checked:shadow-sm transition-all">VEG</span>
                 </label>
                 <label className="flex-1 text-center cursor-pointer">
-                  <input onClick={() => setItemState({ ...itemState, veg_nonveg: "Non-Veg" })} checked={itemState.veg_nonveg === "Non-Veg"} disabled={fieldDisability} type="radio" name="veg_nonveg" value="NON-VEG" className="peer hidden" />
+                  <input onClick={() => setItemState({ ...itemState, veg_nonveg: "Non-Veg" })} checked={itemState.veg_nonveg === "Non-Veg"} disabled={fieldDisability} type="radio" name="veg_nonveg" value="Non-Veg" className="peer hidden" />
                   <span className="block py-2 text-xs font-bold text-slate-400 rounded-lg peer-checked:bg-white peer-checked:text-red-500 peer-checked:shadow-sm transition-all">NON-VEG</span>
                 </label>
               </div>

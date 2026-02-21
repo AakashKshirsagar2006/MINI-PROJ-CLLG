@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
@@ -83,6 +83,7 @@ router.post('/add-food-item', upload.single('image'), async (req, res) => {
 
 // 2. UPDATE FOOD ITEM
 router.post('/update-food-item/:itemId', upload.single('image'), async (req, res) => {
+    console.log("Update food item route hit");
     const itemId = req.params.itemId;
     const { tag, name, price, type, quantity, veg_nonveg, highlights } = req.body;
 
@@ -94,8 +95,10 @@ router.post('/update-food-item/:itemId', upload.single('image'), async (req, res
             tag, name, price, type, quantity, veg_nonveg,
             highlights: highlights ? highlights.split(',') : []
         };
-
+    console.log("Update data before image check:", updateData);
+        console.log(req.file);
         if (req.file) {
+            console.log("New image :", req.file.filename);
             deleteFile(oldItem.img); 
             updateData.img = req.file.filename;
         }

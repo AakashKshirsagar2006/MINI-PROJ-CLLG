@@ -35,7 +35,7 @@ const foodItemSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['Fast Food', 'Full Meals','Indian Thali', 'Chinese','Italian', 'South Indian', 'Deserts', 'Healthy'],
+    enum: ['Fast Food', 'Full Meals','Indian Thali', 'Chinese','Italian', 'South Indian', 'Deserts', 'Healthy', 'Beverages'],
     default: null
   },
   availability: {
