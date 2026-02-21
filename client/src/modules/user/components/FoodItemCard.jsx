@@ -4,6 +4,8 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import VegIndicator from "./VegIndicator";
 import { useCart } from "../../../shared/store/cart-context";
 import { useOrder } from "../../../shared/store/order-context";
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
+
 
 const FoodItemCard = ({ foodItem}) => {
   const {items, loading, addToCart } = useCart();
@@ -20,7 +22,7 @@ const FoodItemCard = ({ foodItem}) => {
         <div className="h-48 rounded-[1.5rem] overflow-hidden relative mb-4">
 
 
-          <img src={foodItem.img} alt="Pizza" className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+          <img src={baseURL+"/uploads/"+foodItem.img} alt="Pizza" className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
 
           {/* Veg Non-Veg Icon */}
           <VegIndicator type={foodItem.veg_nonveg} />

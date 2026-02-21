@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import VegIndicator from "../../user/components/VegIndicator"; 
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import useAdminAction from "../../../shared/hooks/useAdminAction";
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const AdminFoodStockCard = ({ foodItem }) => {
   const buttonDisability = false;
@@ -23,7 +24,7 @@ const AdminFoodStockCard = ({ foodItem }) => {
         {/* Image Section */}
         <div className="relative h-48 shrink-0 rounded-3xl overflow-hidden bg-slate-100">
           <img
-            src={foodItem.img}
+            src={baseURL+"/uploads/"+foodItem.img}
             alt={foodItem.name}
             className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
           />

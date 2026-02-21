@@ -8,7 +8,6 @@ import {
 import ExpirationTimer from "./ExpirationTimer";
 const CheckOutCard = ({orderDetails}) =>{
   const { doPayment, cancelOrder } = useOrder();
-  console.log("Order Details:",orderDetails);
   return (
     <>
     {/* ================================================================
@@ -32,11 +31,6 @@ const CheckOutCard = ({orderDetails}) =>{
                
               </div>
 
-              {/* Timer Badge - Classy Pill Design */}
-              {/* <div className="flex items-center gap-2 bg-orange-50 border border-orange-100 text-orange-700 px-4 py-2 rounded-full shadow-sm">
-                <IoTimeOutline className="animate-pulse text-lg" />
-                <span className="text-sm font-bold tabular-nums">Expires in 10:00</span>
-              </div> */}
 
               <ExpirationTimer createdAt={orderDetails.createdAt}/>
             </div>

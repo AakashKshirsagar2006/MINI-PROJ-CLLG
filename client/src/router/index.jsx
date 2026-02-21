@@ -7,7 +7,7 @@ import adminRoutes from "./admin.routes.jsx";
 import staffRoutes from "./staff.routes.jsx";
 import NotFoundPage from "../modules/user/pages/404NotFound.jsx";
 import ScrollToTop from "../shared/components/ScrollOnTop.jsx";
-
+import kitchneRoutes from "./kitchen.routes.jsx";
 const router = createBrowserRouter([
   {
     element: (
@@ -30,6 +30,10 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute allowedRoles={['staff', 'admin']} />,
         children: Array.isArray(staffRoutes) ? staffRoutes : [staffRoutes],
+      },
+      {
+        element: <ProtectedRoute allowedRoles={['staff', 'admin']} />,
+        children: Array.isArray(kitchneRoutes) ? kitchneRoutes : [kitchneRoutes],
       },
 
       // 4. CATCH-ALL (404)

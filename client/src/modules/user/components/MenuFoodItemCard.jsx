@@ -4,6 +4,7 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import VegIndicator from './VegIndicator';
 import { useOrder } from '../../../shared/store/order-context';
 import { useCart } from '../../../shared/store/cart-context';
+const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const MenuFoodItemCard = ({ foodItem}) => {
   const {items, loading, addToCart } = useCart();
@@ -18,7 +19,7 @@ const MenuFoodItemCard = ({ foodItem}) => {
         {/* Image Section */}
         <div className="relative h-48 shrink-0 rounded-[1.5rem] overflow-hidden bg-slate-100">
           <img
-            src={foodItem.img}
+            src={baseURL+"/uploads/"+foodItem.img}
             alt={foodItem.name}
             className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
           />

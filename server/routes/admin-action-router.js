@@ -4,14 +4,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// MODELS (Ensure these paths are correct for your project!)
 const FoodItems = require('../model/food-item-model');
-const Order = require('../model/order-model'); // Needed for Dashboard
+const Order = require('../model/order-model'); 
 
-// --- MULTER SETUP (For Image Uploads) ---
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Ensure this folder exists!
+        cb(null, 'uploads/'); 
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -36,16 +35,14 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-// --- AUTH MIDDLEWARE ---
+
 router.use((req, res, next) => {
-    // Modify this if your session structure is different
     const user = req.session && req.session.user;
     if (!user) return res.status(401).json({ error: "Unauthenticated" });
     if (user.user_type !== 'admin') return res.status(403).json({ error: "Unauthorized" });
     next();
 });
 
-// Helper to delete old images
 const deleteFile = (filename) => {
     if (!filename) return;
     const filePath = path.join('uploads', filename);
@@ -56,7 +53,7 @@ const deleteFile = (filename) => {
 
 
 // ==================================================================
-//  SECTION 1: DASHBOARD ORDER ROUTES (Added so your Dashboard works)
+//  SECTION 1: DASHBOARD ORDER ROUTES 
 // ==================================================================
 
 // GET: Fetch Active Orders (Pending, Preparing, Ready)
@@ -108,7 +105,7 @@ router.post('/fullfill-order', async (req, res) => {
 
 
 // ==================================================================
-//  SECTION 2: FOOD MANAGEMENT ROUTES (From his file)
+//  SECTION 2: FOOD MANAGEMENT ROUTES 
 // ==================================================================
 
 // 1. ADD FOOD ITEM
@@ -154,7 +151,7 @@ router.post('/update-food-item/:itemId', upload.single('image'), async (req, res
         };
 
         if (req.file) {
-            deleteFile(oldItem.img);
+            deleteFile(oldItem.img); 
             updateData.img = req.file.filename;
         }
         await FoodItems.findByIdAndUpdate(itemId, { $set: updateData });

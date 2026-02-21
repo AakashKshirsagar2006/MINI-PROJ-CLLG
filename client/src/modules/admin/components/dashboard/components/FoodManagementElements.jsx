@@ -191,6 +191,8 @@ export const AddNewFoodItem = () => {
   );
 };
 
+
+
 export const UpdateFoodItem = ({formState}) => {
   const { foodCategories, foodItems } = useFoodItems();
   const [fieldDisability, setFieldDisabilty] = useState(true);
@@ -223,7 +225,7 @@ export const UpdateFoodItem = ({formState}) => {
     const fi = foodItems.filter(f => f.itemUID === uidRef.current.value);
     if (fi[0]) {
       setItemState(fi[0]);
-      setImageState(fi[0].img);
+      setImageState(baseURL+"/uploads/"+fi[0].img);
       setFieldDisabilty(false);
       triggerNotification("Item details loaded", "success");
     } else {

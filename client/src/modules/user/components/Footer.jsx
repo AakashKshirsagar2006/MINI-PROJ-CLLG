@@ -11,7 +11,7 @@ const Footer = ()=>{
           
           {/* Footer Brand Column */}
           <div className="col-span-1 md:col-span-1">
-            <h2 className="text-2xl font-serif font-bold text-white mb-4">Cantina.</h2>
+            <h2 className="text-2xl font-serif font-bold text-white mb-4">FCRIT Canteen</h2>
             <p className="text-sm leading-relaxed mb-6">
               Serving the freshest meals to students with love and premium ingredients.
             </p>

@@ -1,35 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { IoTimeOutline } from 'react-icons/io5';
+import { useOrder } from '../../../shared/store/order-context';
 
 const ExpirationTimer = ({ createdAt, expiresInMinutes = 10 }) => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [isExpired, setIsExpired] = useState(false);
+  const { triggerRefresh } = useOrder();
 
   useEffect(() => {
     if (!createdAt) return;
+
     const createdTime = new Date(createdAt).getTime();
     const expirationTime = createdTime + expiresInMinutes * 60 * 1000;
+    
+    let intervalId; 
 
     const updateTimer = () => {
       const now = Date.now();
       const difference = expirationTime - now;
 
       if (difference <= 0) {
+        if (intervalId) clearInterval(intervalId);
+        
         setTimeLeft(0);
         setIsExpired(true);
+        triggerRefresh(); 
       } else {
         setTimeLeft(Math.floor(difference / 1000));
       }
     };
 
     
-    updateTimer();
-
+    const initialDifference = expirationTime - Date.now();
     
-    const intervalId = setInterval(updateTimer, 1000);
+    if (initialDifference > 0) {
+      updateTimer(); 
+      intervalId = setInterval(updateTimer, 1000); // Start countdown
+    } else {
+      updateTimer(); 
+    }
 
-    return () => clearInterval(intervalId);
-  }, [createdAt, expiresInMinutes]);
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [createdAt, expiresInMinutes]); 
 
   const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
   const seconds = (timeLeft % 60).toString().padStart(2, '0');

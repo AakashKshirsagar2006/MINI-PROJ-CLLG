@@ -44,7 +44,7 @@ const AuthContextProvider = ({ children }) => {
         
         const { user } = await res.json();
         setUserState(user);
-        if (location.pathname === '/login' || location.pathname === '/') {
+        if (location.pathname === '/login' || location.pathname === '/'||location.pathname==='') {
           if(user.user_type === 'staff') navigate('/staff/', { replace: true });
           else if(user.user_type === 'admin') navigate('/admin/', { replace: true });
           else if (location.pathname === '/login') navigate("/", { replace: true }); 

@@ -30,6 +30,10 @@ app.use(cors({
   credentials: true                 
 }));
 
+app.use("/uploads", express.static("uploads", {
+  maxAge: "4d",   
+}));
+
 //app.use("/payment", paymentRouter);
 app.use("/webhook", require("./routes/razorpay-webhook"));
 app.use(express.json())
