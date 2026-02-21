@@ -22,8 +22,6 @@ export const OrderManagementContext = createContext(
   }
 );
 
-
-
 const activeOrderReducer = (state, action) => {
    switch(action.type){
     case "LOADING":
@@ -47,15 +45,15 @@ const activeOrderReducer = (state, action) => {
 const OrderManagementProvider = ({children}) => {
   const {userState} = useAuth();
 
-  // 2. TYPO FIX (dispathcState -> dispatchState)
   const [activeOrdersState, dispatchState] = useReducer(activeOrderReducer, initialActiveOrderState);
 
   const fetchActiveOrders = async () => {
     // dispatchState({type:"LOADING"}); // Commented out to prevent flickering on auto-refresh
-    if(!userState) return;
+    if(!userState) return; // <-- HIS FIX KEPT HERE
+    
     try {
-      // Note: We need to create this backend route later!
-      const res = await fetch(baseURL + "/admin/active-orders", { 
+      // ✅ CHANGED: /admin to /protected (OUR FIX KEPT HERE)
+      const res = await fetch(baseURL + "/protected/active-orders", { 
         method: "GET",
         credentials: "include"
       });
@@ -75,7 +73,8 @@ const OrderManagementProvider = ({children}) => {
   const processOrder = async (orderId, fullfillment_status) => {
      dispatchState({type:"LOADING"});
      try {
-        const res = await fetch(baseURL + "/admin/process-order", {
+        // ✅ CHANGED: /admin to /protected
+        const res = await fetch(baseURL + "/protected/process-order", {
            method: "POST",
            headers: {"Content-Type": "application/json"},
            body: JSON.stringify({orderId, fullfillment_status}),
@@ -94,7 +93,8 @@ const OrderManagementProvider = ({children}) => {
   const fullfillOrder = async (orderId, orderOTP) => {
     dispatchState({type:"LOADING"});
     try {
-      const res = await fetch(baseURL + "/admin/fullfill-order", {
+      // ✅ CHANGED: /admin to /protected
+      const res = await fetch(baseURL + "/protected/fullfill-order", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({orderId, orderOTP}),
