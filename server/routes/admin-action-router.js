@@ -1,15 +1,12 @@
-
-
-// module.exports = router;
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// MODELS 
+// MODELS and CONTROLLERS
 const FoodItems = require('../model/food-item-model');
-// Removed Order model - Admin router doesn't need it anymore!
+const { getAllStaff, addStaff, updateStaff, deleteStaff } = require('../controller/staff-controller');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -35,7 +32,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: { fileSize: 1 * 1024 * 1024 } // Kept your 1MB limit!
+    limits: { fileSize: 1 * 1024 * 1024 } //  1MB limit!
 });
 
 
@@ -43,7 +40,7 @@ router.use((req, res, next) => {
     const user = req.session && req.session.user;
     if (!user) return res.status(401).json({ error: "Unauthenticated" });
     
-    // BACK TO STRICT ADMIN ONLY. Staff cannot bypass this anymore.
+    // STRICT ADMIN ONLY. Staff cannot bypass this.
     if (user.user_type !== 'admin') return res.status(403).json({ error: "Unauthorized" });
     next();
 });
@@ -150,5 +147,13 @@ router.post('/stock-modification', async (req, res) => {
         res.status(500).json({ error: "Internal server error!" });
     }
 });
+
+// ==================================================================
+// STAFF MANAGEMENT ROUTES (Strictly Admin)
+// ==================================================================
+router.get('/all-staff', getAllStaff);
+router.post('/add-staff', addStaff);
+router.post('/update-staff', updateStaff);
+router.delete('/delete-staff', deleteStaff);
 
 module.exports = router;

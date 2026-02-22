@@ -78,7 +78,7 @@ const LoginFormComponent = ({role, setRole, onSubmitHandler, userIdRef, password
                         ref={userIdRef}
                         required
                         type={role === 'common' ? 'email' : 'text'}
-                        placeholder={role === 'common' ? 'example@gmail.com' : role === 'staff' ? 'EMP-001' : 'admin_root'}
+                        placeholder={role === 'common' ? 'example@gmail.com' : role === 'staff' ? 'EMP001' : 'admin_root'}
                         className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition"
                     />
                 </div>

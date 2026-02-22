@@ -1,4 +1,3 @@
-
 const isGmail = (email) => {
   if (typeof email !== "string") return false;
   return /^(?!\.)(?!.*\.\.)[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim());
@@ -6,7 +5,8 @@ const isGmail = (email) => {
 
 const isStaffID = (id) => {
   if (typeof id !== "string") return false;
-  return /^\d{7}$/.test(id.trim());
+  // Matches "EMP" followed by 3 or more digits (e.g., EMP001, EMP012, EMP100)
+  return /^EMP\d{3,}$/i.test(id.trim());
 };
 
 module.exports = { isGmail, isStaffID };

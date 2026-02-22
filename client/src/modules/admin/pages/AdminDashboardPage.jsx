@@ -25,6 +25,7 @@ import SideBarNav from '../components/dashboard/components/SideBarNav';
 import AnalyticsPage from '../components/dashboard/AnalyticsPage';
 import FoodManagementPage from '../components/dashboard/FoodManagementPage';
 import AdminPaymentLogs from '../components/dashboard/AdminPaymentLogs';
+import StaffManagement from '../components/dashboard/StaffManagement';
 
 const AdminDashboard = () => {
   // --- STATE MANAGEMENT ---
@@ -101,6 +102,11 @@ const AdminDashboard = () => {
             <FoodManagementPage
              pageState = {foodManagementPageState}
          />)}
+
+         {/* RENDER STAFF MANAGEMENT WHEN TAB IS CLICKED */}
+         {activeView === 'staff' && (
+            <StaffManagement />
+         )}
         <div className="p-6 md:p-10 max-w-7xl mx-auto">
           
           {/* ================= VIEW 1: ANALYTICS DASHBOARD ================= */}
