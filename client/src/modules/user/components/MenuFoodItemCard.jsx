@@ -14,10 +14,10 @@ const MenuFoodItemCard = ({ foodItem}) => {
   const buttonDisability = !(!orderDetails)||(!foodItem.availability) || isInCart || loading;
   return (
     <>
-      <div className="bg-white p-3 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:border-orange-100 transition duration-300 group flex flex-col h-full">
+      <div className="bg-white p-3 rounded-4xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-orange-100 transition duration-300 group flex flex-col h-full">
 
         {/* Image Section */}
-        <div className="relative h-48 shrink-0 rounded-[1.5rem] overflow-hidden bg-slate-100">
+        <div className="relative h-48 shrink-0 rounded-3xl overflow-hidden bg-slate-100">
           <img
             src={baseURL+"/uploads/"+foodItem.img}
             alt={foodItem.name}
@@ -25,16 +25,17 @@ const MenuFoodItemCard = ({ foodItem}) => {
           />
 
           {/* Veg/Non-Veg Icon */}
-          <VegIndicator type={foodItem.veg_nonveg} />
+          <VegIndicator type={foodItem.dietaryType} />
 
           {/*  Tags */}
-          <div className="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wide shadow-md shadow-orange-500/20">
+          {foodItem.tag && <div className="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wide shadow-md shadow-orange-500/20">
             {foodItem.tag}
           </div>
+            }
         </div>
 
         {/* Content Section */}
-        <div className="pt-4 px-2 pb-2 flex flex-col flex-grow">
+        <div className="pt-4 px-2 pb-2 flex flex-col grow">
           <div className="flex justify-between items-start mb-1">
             <h3 className="font-bold text-slate-900 text-lg leading-tight">{foodItem.name}</h3>
             <span className="font-bold text-slate-900 text-lg">{foodItem.availability ? `₹${foodItem.price}` : "Not Available"}</span>

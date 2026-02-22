@@ -8,7 +8,7 @@ const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const CartFoodItemCard = ({ cartFoodItem , deleteFunction, loadingState, updateQuantity, totalQty }) => {
 
-  const {_id, name, img, price, highlights, veg_nonveg, availability, qty } = cartFoodItem;
+  const {_id, name, img, price, highlights,  dietaryType, availability, qty } = cartFoodItem;
   
   //  GET THE PENDING ORDER STATE
   const { orderDetails } = useOrder();
@@ -29,7 +29,7 @@ const CartFoodItemCard = ({ cartFoodItem , deleteFunction, loadingState, updateQ
           alt={name}
           className="w-full h-full object-cover"
         />
-        <VegIndicator type={veg_nonveg} />
+        <VegIndicator type={ dietaryType} />
       </div>
 
       {/* Content Section */}

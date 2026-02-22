@@ -25,10 +25,10 @@ const FoodItemCard = ({ foodItem}) => {
           <img src={baseURL+"/uploads/"+foodItem.img} alt="Pizza" className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
 
           {/* Veg Non-Veg Icon */}
-          <VegIndicator type={foodItem.veg_nonveg} />
+          <VegIndicator type={foodItem. dietaryType} />
 
           {/* tags */}
-          {foodItem.tag && <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-orange-600">
+          {foodItem.tag && <div className="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wide shadow-md shadow-orange-500/20">
             {foodItem.tag}
           </div>}
 

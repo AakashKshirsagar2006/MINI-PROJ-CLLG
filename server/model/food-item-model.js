@@ -28,12 +28,12 @@ const foodItemSchema = new mongoose.Schema({
     type: String,
     default:"Recomended"
   },
-  veg_nonveg: {
+   dietaryType: {
     type: String,
     required: [true, 'Food category is required'],
-    enum: ['Veg', 'Non-Veg']
+    enum: ['Veg', 'Non-Veg','Egg']
   },
-  type: {
+  category: {
     type: String,
     enum: ['Fast Food', 'Full Meals','Indian Thali', 'Chinese','Italian', 'South Indian', 'Deserts', 'Healthy', 'Beverages'],
     default: null

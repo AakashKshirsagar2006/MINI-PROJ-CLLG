@@ -29,12 +29,13 @@ const AdminFoodStockCard = ({ foodItem }) => {
             className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
           />
           {/* Veg/Non-Veg Icon */}
-          <VegIndicator type={foodItem.veg_nonveg} />
+          <VegIndicator type={foodItem.dietaryType} />
 
           {/* Tags */}
-          <div className="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wide shadow-md shadow-orange-500/20">
+          {foodItem.tag && <div className="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wide shadow-md shadow-orange-500/20">
             {foodItem.tag}
-          </div>
+          </div>}
+
         </div>
 
         {/* Content Section */}
@@ -60,12 +61,12 @@ const AdminFoodStockCard = ({ foodItem }) => {
 
           <div className="flex flex-col">
             <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-0.5">Type</span>
-            <span className="text-sm font-semibold text-slate-700 capitalize truncate">{foodItem.type}</span>
+            <span className="text-sm font-semibold text-slate-700 capitalize truncate">{foodItem.category}</span>
           </div>
 
           <div className="flex flex-col">
             <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-0.5">Diet</span>
-            <span className="text-sm font-semibold text-slate-700 capitalize truncate">{foodItem.veg_nonveg}</span>
+            <span className="text-sm font-semibold text-slate-700 capitalize truncate">{foodItem. dietaryType}</span>
           </div>
 
           <div className="flex flex-col">

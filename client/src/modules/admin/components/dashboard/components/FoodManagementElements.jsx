@@ -143,7 +143,7 @@ export const AddNewFoodItem = () => {
             </div>
             <div>
               <span className={labelClass}>Category</span>
-              <select name="type" className={`${inputClass} cursor-pointer text-slate-600`}>
+              <select name="category" className={`${inputClass} cursor-pointer text-slate-600`}>
                 {foodCategories && foodCategories.map((category) => (
                   <option key={category} value={category}>{category}</option>
                 ))}
@@ -160,12 +160,17 @@ export const AddNewFoodItem = () => {
               <span className={labelClass}>Type</span>
               <div className="flex bg-slate-50 p-1 rounded-xl border border-transparent">
                 <label className="flex-1 text-center cursor-pointer">
-                  <input type="radio" name="veg_nonveg" value="Veg" className="peer hidden" defaultChecked />
+                  <input type="radio" name=" dietaryType" value="Veg" className="peer hidden" defaultChecked />
                   <span className="block py-2 text-xs font-bold text-slate-400 rounded-lg peer-checked:bg-white peer-checked:text-green-600 peer-checked:shadow-sm transition-all">Veg</span>
                 </label>
                 <label className="flex-1 text-center cursor-pointer">
-                  <input type="radio" name="veg_nonveg" value="Non-Veg" className="peer hidden" />
+                  <input type="radio" name="dietaryType" value="Non-Veg" className="peer hidden" />
                   <span className="block py-2 text-xs font-bold text-slate-400 rounded-lg peer-checked:bg-white peer-checked:text-red-500 peer-checked:shadow-sm transition-all">Non-Veg</span>
+                </label>
+
+                <label className="flex-1 text-center cursor-pointer">
+                  <input type="radio" name="dietaryType" value="Egg" className="peer hidden" />
+                  <span className="block py-2 text-xs font-bold text-slate-400 rounded-lg peer-checked:bg-white peer-checked:text-amber-900 peer-checked:shadow-sm transition-all">EGG</span>
                 </label>
               </div>
             </div>
@@ -196,7 +201,7 @@ export const AddNewFoodItem = () => {
 export const UpdateFoodItem = ({formState}) => {
   const { foodCategories, foodItems } = useFoodItems();
   const [fieldDisability, setFieldDisabilty] = useState(true);
-  const [itemState, setItemState] = useState({ veg_nonveg: "", type: "" });
+  const [itemState, setItemState] = useState({  dietaryType: "",  category: "" });
   const [imageState, setImageState] = useState(null);
   const fileInputRef = useRef(null);
   const uidRef = useRef("");
@@ -256,7 +261,7 @@ export const UpdateFoodItem = ({formState}) => {
         console.log("Success:", data);
         triggerNotification("Item updated successfully!", "success");
         
-        setItemState({ veg_nonveg: "", type: "" }); 
+        setItemState({  dietaryType: "", category: "" }); 
         setImageState(null);
         formElement.reset(); 
         setFieldDisabilty(true); 
@@ -288,7 +293,7 @@ export const UpdateFoodItem = ({formState}) => {
       triggerNotification("Item deleted successfully", "success");
       
      
-      setItemState({ veg_nonveg: "", type: "" }); 
+      setItemState({  dietaryType: "", category: "" }); 
       setImageState(null); 
       formElement.reset(); 
       setFieldDisabilty(true); 
@@ -371,9 +376,9 @@ export const UpdateFoodItem = ({formState}) => {
             <div>
               <span className={labelClass}>Category</span>
               <select
-                name="type"
-                onChange={(e) => setItemState({ ...itemState, type: e.target.value })}
-                value={itemState?.type || ""}
+                name="category"
+                onChange={(e) => setItemState({ ...itemState, category: e.target.value })}
+                value={itemState?.category || ""}
                 disabled={fieldDisability} className={`${inputClass} cursor-pointer text-slate-600`}>
                 {foodCategories && foodCategories.map((category) => (
                   <option key={category} value={category}>{category}</option>
@@ -394,12 +399,17 @@ export const UpdateFoodItem = ({formState}) => {
               <span className={labelClass}>Type</span>
               <div className="flex bg-slate-50 p-1 rounded-xl border border-transparent">
                 <label className="flex-1 text-center cursor-pointer">
-                  <input onClick={() => setItemState({ ...itemState, veg_nonveg: "Veg" })} checked={itemState.veg_nonveg === "Veg"} disabled={fieldDisability} type="radio" name="veg_nonveg" value="Veg" className="peer hidden" />
+                  <input onClick={() => setItemState({ ...itemState,  dietaryType: "Veg" })} checked={itemState.dietaryType === "Veg"} disabled={fieldDisability} type="radio" name="dietaryType" value="Veg" className="peer hidden" />
                   <span className="block py-2 text-xs font-bold text-slate-400 rounded-lg peer-checked:bg-white peer-checked:text-green-600 peer-checked:shadow-sm transition-all">VEG</span>
                 </label>
                 <label className="flex-1 text-center cursor-pointer">
-                  <input onClick={() => setItemState({ ...itemState, veg_nonveg: "Non-Veg" })} checked={itemState.veg_nonveg === "Non-Veg"} disabled={fieldDisability} type="radio" name="veg_nonveg" value="Non-Veg" className="peer hidden" />
+                  <input onClick={() => setItemState({ ...itemState,  dietaryType: "Non-Veg" })} checked={itemState.dietaryType === "Non-Veg"} disabled={fieldDisability} type="radio" name="dietaryType" value="Non-Veg" className="peer hidden" />
                   <span className="block py-2 text-xs font-bold text-slate-400 rounded-lg peer-checked:bg-white peer-checked:text-red-500 peer-checked:shadow-sm transition-all">NON-VEG</span>
+                </label>
+
+                <label className="flex-1 text-center cursor-pointer">
+                  <input onClick={() => setItemState({ ...itemState,  dietaryType: "Egg" })} checked={itemState.dietaryType === "Egg"} disabled={fieldDisability} type="radio" name="dietaryType" value="Egg" className="peer hidden" />
+                  <span className="block py-2 text-xs font-bold text-slate-400 rounded-lg peer-checked:bg-white peer-checked:text-amber-900 peer-checked:shadow-sm transition-all">EGG</span>
                 </label>
               </div>
             </div>

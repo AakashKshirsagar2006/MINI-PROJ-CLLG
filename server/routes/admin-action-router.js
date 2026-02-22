@@ -63,12 +63,12 @@ const deleteFile = (filename) => {
 // 1. ADD FOOD ITEM
 router.post('/add-food-item', upload.single('image'), async (req, res) => {
     try {
-        const { itemUID, tag, name, price, type, quantity, veg_nonveg, highlights } = req.body;
+        const { itemUID, tag, name, price, category, quantity,  dietaryType, highlights } = req.body;
 
         if (!req.file) return res.status(400).json({ error: "Image is required" });
 
         await new FoodItems({
-            itemUID, tag, name, price, type, quantity, locked_quantity: 0, veg_nonveg,
+            itemUID, tag, name, price, category, quantity, locked_quantity: 0,  dietaryType,
             highlights: highlights ? highlights.split(',') : [],
             img: req.file.filename,
             availability: true
@@ -85,14 +85,14 @@ router.post('/add-food-item', upload.single('image'), async (req, res) => {
 router.post('/update-food-item/:itemId', upload.single('image'), async (req, res) => {
     console.log("Update food item route hit");
     const itemId = req.params.itemId;
-    const { tag, name, price, type, quantity, veg_nonveg, highlights } = req.body;
+    const { tag, name, price, category, quantity,  dietaryType, highlights } = req.body;
 
     try {
         const oldItem = await FoodItems.findById(itemId);
         if (!oldItem) return res.status(404).json({ error: "Item not found" });
         
         let updateData = {
-            tag, name, price, type, quantity, veg_nonveg,
+            tag, name, price, category, quantity,  dietaryType,
             highlights: highlights ? highlights.split(',') : []
         };
     console.log("Update data before image check:", updateData);

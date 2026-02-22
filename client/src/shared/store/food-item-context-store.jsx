@@ -25,7 +25,7 @@ const FoodItemsContextProvider = ({children}) => {
   const bestSellers = foodItems.filter(item =>[ "best seller", "bestseller"].includes(item.tag?.toLowerCase().trim()) );
 
   const todaysSpecial = foodItems.filter(item =>{
-    return (["today's special", "todays special"].includes(item.tag?.trim().toLowerCase())||[ "today's special", "todays special"].includes(item.type?.trim().toLowerCase()) )
+    return (["today's special", "todays special"].includes(item.tag?.trim().toLowerCase())||[ "today's special", "todays special"].includes(item.category?.trim().toLowerCase()) )
   });
 
 
@@ -38,11 +38,11 @@ const FoodItemsContextProvider = ({children}) => {
 
   // Sort items into categories
   foodItems.forEach(foodItem => {
-    if (!foodItemsByCategory[foodItem.type]) {
+    if (!foodItemsByCategory[foodItem.category]) {
        // If a new category appears from DB that isn't in the hardcoded list
-       foodItemsByCategory[foodItem.type] = [];
+       foodItemsByCategory[foodItem.category] = [];
     }
-    foodItemsByCategory[foodItem.type].push(foodItem);
+    foodItemsByCategory[foodItem.category].push(foodItem);
   });
 
   // SEARCH LOGIC
