@@ -5,17 +5,19 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import useAdminAction from "../../../shared/hooks/useAdminAction";
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
-const AdminFoodStockCard = ({ foodItem }) => {
-  const buttonDisability = false;
+const AdminFoodStockCard = ({foodItem,loadingState,handleApplyChanges}) => {
   const quantityRef = useRef(foodItem.quantity);
   const [availability, setAvailability] = useState(foodItem.availability);
-  const {quickStockActions} = useAdminAction();
  
-  const handleApplyChanges = () => {
-    const quantity = quantityRef.current.value;
-    const id = foodItem._id.toString();
-    quickStockActions(id, quantity, availability);
-  }
+  // const handleApplyChanges = async () => {
+  //   const quantity = quantityRef.current.value;
+  //   const id = foodItem._id.toString();
+  //   const res = await quickStockActions(id, quantity, availability);
+  //   if(res) triggerNotification("Successfully applied changes","success");
+  //   else{
+  //     triggerNotification("Failed to apply changes","error");
+  //   }
+  // }
 
   return (
     <>
@@ -97,7 +99,7 @@ const AdminFoodStockCard = ({ foodItem }) => {
                 max={1000}
                 ref={quantityRef}
                 type="number"
-                disabled={buttonDisability}
+                disabled={loadingState}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white transition shadow-sm"
                 placeholder="Qty"
                 defaultValue={foodItem.quantity}
@@ -120,7 +122,7 @@ const AdminFoodStockCard = ({ foodItem }) => {
                     quantityRef.current.value = foodItem.quantity;
                   }
                 }}
-                disabled={buttonDisability}
+                disabled={loadingState}
                 className={`w-16 h-9 rounded-full p-1 transition-colors duration-300 flex items-center ${availability ? 'bg-green-500' : 'bg-slate-200'}`}
               >
                 <div className={`w-7 h-7 bg-white rounded-full shadow-md transform transition-transform duration-300 ${availability ? 'translate-x-7' : 'translate-x-0'}`} />
@@ -131,8 +133,8 @@ const AdminFoodStockCard = ({ foodItem }) => {
 
           <div className="mt-6">
             <button
-              disabled={buttonDisability}
-              onClick={handleApplyChanges}
+              disabled={loadingState}
+              onClick={()=> handleApplyChanges(foodItem._id.toString(), quantityRef.current.value, availability)}
               className="w-full flex items-center justify-center gap-2 bg-slate-900 text-white py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:bg-orange-500 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-1 active:translate-y-0 active:scale-95 group/btn"
             >
               Apply Changes

@@ -2,29 +2,12 @@ import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useFoodItems } from "../../../../../shared/hooks/useFoodItems"; // We will create this hook next!
 import { IoAdd, IoCloudUploadOutline, IoCheckmarkCircle, IoAlertCircle } from "react-icons/io5";
-
+import NotificationPopup from "../../../../../shared/components/NotificationPopup";
 // SAFETY FIX: Hardcoded URL for stability
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 // --- 1. Reusable Popup Component ---
-const NotificationPopup = ({ show, message, type }) => {
-  if (!show) return null;
 
-  const isSuccess = type === "success";
-  
-  return createPortal(
-    <div className={`fixed top-6 right-6 z-[9999] flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-0 ${
-      isSuccess ? "bg-slate-900 text-white" : "bg-red-500 text-white"
-    }`}>
-      {isSuccess ? <IoCheckmarkCircle className="text-2xl text-green-400" /> : <IoAlertCircle className="text-2xl text-white" />}
-      <div>
-        <h4 className="font-bold text-sm">{isSuccess ? "Success" : "Error"}</h4>
-        <p className="text-xs opacity-90 font-medium">{message}</p>
-      </div>
-    </div>,
-    document.body
-  );
-};
 
 export const AddNewFoodItem = () => {
   const { foodCategories } = useFoodItems();
@@ -96,7 +79,7 @@ export const AddNewFoodItem = () => {
         {/* --- LEFT COLUMN: IMAGE UPLOAD --- */}
         <div
           onClick={() => fileInputRef.current.click()}
-          className={`lg:col-span-2 relative w-full h-48 min-h-[300px] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all group ${imageState ? 'border-orange-500 bg-white' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-orange-400'}`}
+          className={`lg:col-span-2 relative w-full h-48 min-h-75 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all group ${imageState ? 'border-orange-500 bg-white' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-orange-400'}`}
         >
           {imageState ? (
             <>
@@ -321,7 +304,7 @@ export const UpdateFoodItem = ({formState}) => {
         {/* --- LEFT COLUMN: IMAGE UPLOAD --- */}
         <div
           onClick={() => fileInputRef.current.click()}
-          className={`lg:col-span-2 relative w-full h-48 min-h-[300px] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all group ${imageState ? 'border-orange-500 bg-white' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-orange-400'}`}
+          className={`lg:col-span-2 relative w-full h-48 min-h-75 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all group ${imageState ? 'border-orange-500 bg-white' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-orange-400'}`}
         >
           {imageState ? (
             <>

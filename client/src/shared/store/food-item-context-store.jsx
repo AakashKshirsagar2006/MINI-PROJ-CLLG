@@ -1,5 +1,5 @@
 import { createContext, useEffect, useMemo, useState } from "react";
-import fuzzySearch from "./utilities/string-matching-algorithm"; 
+import fuzzySearch from "../utilities/string-matching-algorithm"; 
 
 export const FoodItemsContext = createContext(null);
 

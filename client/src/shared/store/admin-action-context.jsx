@@ -11,6 +11,10 @@ const AdminActionContextProvider = ({children}) => {
 
   /*
   * quickStockActions method
+  *@param-itemId : _id of the food item
+  *@param-quantity: quantity to be set in integers
+  *@param-availability: true of false
+  *returns true or false on the basis of the success or faliure
   */
   const quickStockActions = async(itemId, quantity, availability) => {
        setAdminPageLoadingState(true);
@@ -22,12 +26,15 @@ const AdminActionContextProvider = ({children}) => {
           credentials: "include"
         });
       if(!res.ok) throw new Error("Something went wrong");
-      setAdminPageLoadingState(false);
+      else return true;
        }
        catch(err){
+        console.error(err.message);
+        return false;
+       } 
+       finally{
         setAdminPageLoadingState(false);
-        console.error(err);
-       }    
+       }   
   }
 
   const addFoodItems = async (formData) => {
