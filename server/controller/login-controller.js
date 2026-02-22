@@ -3,7 +3,7 @@ const { check, validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 const User = require('../model/user-model');
 const Staff = require('../model/staff-model'); 
-const { isGmail, isStaffID } = require('../utils/userID-validator');
+const { isValidEmail, isStaffID } = require('../utils/userID-validator');
 
 const allowedUserType = ["common", "staff", "admin"];
 
@@ -14,7 +14,7 @@ const loginController = [
       
       if (value === "common") {
         // Fixed tiny typo: UserID to userID
-        if (!isGmail(req.body.userID)) throw new Error("Enter a valid email");
+        if (!isValidEmail(req.body.userID)) throw new Error("Enter a valid email");
       } else {
         // Admin or Staff validation
         if (!isStaffID(req.body.userID)) throw new Error("Enter a valid ID");

@@ -1,8 +1,7 @@
 const nodemailer = require("nodemailer");
 
 /**
- * 
- * @param {string} to - Recipient email address
+ * * @param {string} to - Recipient email address
  * @param {string} subject - Subject line of the email
  * @param {string} text - Plain text body
  * @param {string} [html] - Optional HTML body
@@ -10,26 +9,21 @@ const nodemailer = require("nodemailer");
  */
 async function sendEmail(to, subject, text, html = null) {
   try {
-    // Create transporter (example: Gmail SMTP)
-    console.log("Auth user:", "example.multipurpose2000@gmail.com");
-
     const transporter = nodemailer.createTransport({
       service: "gmail",
-      auth:{
-        user: "example.multipurpose2000@gmail.com", 
-        pass: "gpna piax sdkw pict"  
+      auth: {
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS  
       }
     });
-
     
     const mailOptions = {
-      from:`"College MP" <example.multipurpose2000@gmail.com>`,
+      from:`"FCRIT Canteen" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,
       html
     };
-
     
     const info = await transporter.sendMail(mailOptions);
     console.log("Email sent:", info.messageId);
@@ -41,3 +35,4 @@ async function sendEmail(to, subject, text, html = null) {
 }
 
 module.exports = sendEmail;
+
