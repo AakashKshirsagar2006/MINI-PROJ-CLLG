@@ -35,7 +35,7 @@ export const AddNewFoodItem = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formElement = e.currentTarget.form;
+    const formElement = e.currentTarget;
     const formData = new FormData(formElement);
 
     try {
@@ -143,7 +143,7 @@ export const AddNewFoodItem = () => {
               <span className={labelClass}>Type</span>
               <div className="flex bg-slate-50 p-1 rounded-xl border border-transparent">
                 <label className="flex-1 text-center cursor-pointer">
-                  <input type="radio" name=" dietaryType" value="Veg" className="peer hidden" defaultChecked />
+                  <input type="radio" name="dietaryType" value="Veg" className="peer hidden" defaultChecked />
                   <span className="block py-2 text-xs font-bold text-slate-400 rounded-lg peer-checked:bg-white peer-checked:text-green-600 peer-checked:shadow-sm transition-all">Veg</span>
                 </label>
                 <label className="flex-1 text-center cursor-pointer">
