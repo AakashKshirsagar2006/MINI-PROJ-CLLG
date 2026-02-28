@@ -171,6 +171,36 @@ export const OrderProvider = ({ children }) => {
           return;
       }
 
+      // Cleanup utility: Destroys scripts, iframes, and preload links from the DOM
+      const cleanUpRazorpay = () => {
+          setTimeout(() => {
+              // 1. Remove the main script
+              const script = document.getElementById("razorpay-checkout-script");
+              if (script) script.remove();
+              
+              // 2. Remove the ghost iframes created by Razorpay
+              document.querySelectorAll('iframe').forEach(iframe => {
+                  if(iframe.name === "razorpay_checkout" || iframe.src?.includes("razorpay")) {
+                      iframe.remove();
+                  }
+              });
+
+              // 3. Remove the stacked preload links from the document head
+              document.querySelectorAll('link[rel="preload"]').forEach(link => {
+                  if(link.href && link.href.includes("razorpay")) {
+                      link.remove();
+                  }
+              });
+              
+              // 4. Safely release the memory reference without strict-mode errors
+              if(window.Razorpay) {
+                  window.Razorpay = undefined;
+              }
+              
+              console.log("Razorpay core and preload links successfully cleared from DOM.");
+          }, 1500); // 1500ms delay ensures the closing animation completes smoothly
+      };
+
       try {
           const options = {
               key: razorpayKey,
@@ -192,6 +222,7 @@ export const OrderProvider = ({ children }) => {
                   } finally {
                       setCartLoading(false);
                       document.body.style.overflow = 'auto'; 
+                      cleanUpRazorpay();
                   }
               },
               
@@ -208,6 +239,7 @@ export const OrderProvider = ({ children }) => {
                           if (prevState.error) return prevState;
                           return { ...prevState, loading: false, error: null };
                       });
+                      cleanUpRazorpay();
                   }
               }
           };
@@ -222,6 +254,7 @@ export const OrderProvider = ({ children }) => {
                   type: "ERROR", 
                   payload: { message: response.error.description || "Payment failed." } 
               });
+              cleanUpRazorpay();
           });
 
           rzp.open();
@@ -230,6 +263,7 @@ export const OrderProvider = ({ children }) => {
           setCartLoading(false);
           document.body.style.overflow = 'auto';
           dispatchOrderState({ type: "ERROR", payload: { message: fatalError.message } });
+          cleanUpRazorpay();
       }
   };
 
@@ -252,7 +286,7 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
-  // FIX: Watch the primitive ID and the refreshTrigger so verified payments instantly reload the queue
+  // Watch the primitive ID and refreshTrigger to instantly reload the queue after verification
   useEffect(() => { 
     if (!userState?._id) return;
     fetchOrders(); 
