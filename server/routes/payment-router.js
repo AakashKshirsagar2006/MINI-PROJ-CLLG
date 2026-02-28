@@ -1,8 +1,8 @@
-
 const express = require("express");
 const crypto = require("crypto");
 const Order = require("../model/order-model");
-const PaymentDetails = require("../model/payment-details-model"); // Import this!
+const PaymentDetails = require("../model/payment-details-model"); 
+const createOrderUID = require("../utils/orderUID");
 
 const router = express.Router();
 
@@ -10,52 +10,39 @@ const router = express.Router();
 // 1. GET PAYMENT LOGS (For Admin Dashboard)
 // ==========================================
 router.get("/logs", async (req, res) => {
-  // 1. Security Check (Uncomment when ready)
+  // Security Check 
   if (!req.session.user || req.session.user.user_type !== 'admin') {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const { search, type } = req.query; // type = 'payment' or 'refund'
+  const { search, type } = req.query; 
 
   try {
     const pipeline = [
-      // A. Join with 'orders' collection to get OrderUID
       {
         $lookup: {
-          from: "orders", // Exact name of your orders collection in Mongo
+          from: "orders", 
           localField: "orderId",
           foreignField: "_id",
           as: "orderData"
         }
       },
-      // B. Unwind the array (since lookup returns an array)
       { $unwind: "$orderData" },
-
-      // C. Filter by Type (Payments vs Refunds)
-      // Currently you only have 'succeeded' for payments. 
-      // Later for refunds you might check status: 'refunded'
       { 
         $match: { 
-           status: "succeeded" // Adjust this logic later when you add Refunds
+           status: "succeeded" 
         } 
       },
-
-      // D. Search Logic (If search query is provided)
       ...(search ? [{
           $match: { 
             "orderData.orderUID": { $regex: search, $options: "i" } 
           }
       }] : []),
-
-      // E. Sort by Date (Newest First)
       { $sort: { paymentDate: -1 } },
-
-      // F. Limit (Optional: to prevent loading 1000s of rows)
       { $limit: 50 } 
     ];
 
     const logs = await PaymentDetails.aggregate(pipeline);
-
     return res.json({ logs });
 
   } catch (err) {
@@ -91,7 +78,6 @@ router.post("/verify", async (req, res) => {
     return res.status(404).json({ message: "Order not found" });
   }
 
-  
   if (order.status === "PAID") {
     console.log("Order was already paid via webhook. Returning 200 OK to frontend.");
     return res.status(200).json({
@@ -100,7 +86,6 @@ router.post("/verify", async (req, res) => {
     });
   }
 
-  
   if (order.status !== "CREATED") {
     return res.status(400).json({ message: "Order cannot be processed" });
   }
@@ -123,6 +108,11 @@ router.post("/verify", async (req, res) => {
   order.razorpaySignature = razorpay_signature;
   order.paidAt = new Date();
   order.fullfillment_status = "PENDING";
+  
+  // FIX: Assign the 00001 Token if frontend verifies first!
+  order.orderUID = await createOrderUID();
+  
+  // OTP IS BYPASSED HERE FOR THE NEW WORKFLOW
 
   await order.save();
 

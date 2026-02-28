@@ -1,44 +1,32 @@
-const crypto = require('crypto');
 const Order = require('../model/order-model');
 
-function generateRandomUID() {
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  
-  
-  const char1 = letters.charAt(crypto.randomInt(0, 26));
-  const char2 = letters.charAt(crypto.randomInt(0, 26));
-  
-  // Get a random number between 0 and 9999
-  const num = crypto.randomInt(0, 10000);
-  
-  // Format string
-  return `${char1}${char2}${num.toString().padStart(4, '0')}`;
-}
-
 /**
- * High-level function to ensure uniqueness
+ * auto-incrementing 5-digit UID (e.g., 00001, 00045)
+ * Automatically resets to 00001 every day at midnight.
  */
-async function createOrderUID(db) {
-  let unique = false;
-  let uid = '';
-  let attempts = 0;
+async function createOrderUID() {
+  //exact timestamp for midnight of the current day
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
 
-  while (!unique&&attempts<100) {
-    uid = generateRandomUID();
-    const exists = await Order.findOne({orderUID:uid, fullfillment_status:{$in:["PENDING","PREPARING","READY"]}});
+  //Query DB for the  latest order placed TODAY
+  // Using sort({ _id: -1 }) is the fastest way to get the newest document in Mongo
+  const lastOrder = await Order.findOne({ createdAt: { $gte: startOfDay } })
+    .sort({ _id: -1 })
+    .select('orderUID');
 
-    if (!exists) {
-      unique = true;
-    } else {
-      attempts++;
+  //Increment logic
+  let nextNum = 1;
+  if (lastOrder && lastOrder.orderUID) {
+    // Convert string '00045' to number 45, then add 1
+    const lastNum = parseInt(lastOrder.orderUID, 10);
+    if (!isNaN(lastNum)) {
+      nextNum = lastNum + 1;
     }
   }
 
-  if (!unique) throw new Error('Failed to generate unique ID after 5 attempts');
-  
-  return uid;
+  // Pad with leading zeros to guarantee 5 digits
+  return nextNum.toString().padStart(5, '0');
 }
 
 module.exports = createOrderUID;
-
-

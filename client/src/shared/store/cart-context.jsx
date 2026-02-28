@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useReducer, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useReducer, useMemo } from "react";
 import { AuthContext } from "./auth-context";
+
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 const CartContext = createContext(null);
 
@@ -11,9 +12,7 @@ const initialState = {
 };
 
 function cartReducer(state, action) {
-
   switch (action.type) {
-
     case "IDLE":
       return { ...state, loading: false };
 
@@ -22,38 +21,15 @@ function cartReducer(state, action) {
 
     case "REHYDRATE": {
       const items = { ...action.payload.items };
-
       for (let key in items) {
-        const storedQty = parseInt(
-          localStorage.getItem(`cart_item_${key}`),
-          10
-        );
-
-        items[key].qty = Number.isInteger(storedQty) && storedQty > 0 
-          ? storedQty
-          : 1;
+        const storedQty = parseInt(localStorage.getItem(`cart_item_${key}`), 10);
+        items[key].qty = Number.isInteger(storedQty) && storedQty > 0 ? storedQty : 1;
       }
+      const totalQty = Object.values(items).reduce((sum, item) => sum + item.qty, 0);
+      const totalPrice = Object.values(items).reduce((sum, item) => sum + item.qty * item.price, 0);
 
-      const totalQty = Object.values(items).reduce(
-        (sum, item) => sum + item.qty,
-        0
-      );
-
-      const totalPrice = Object.values(items).reduce(
-        (sum, item) => sum + item.qty * item.price,
-        0
-      );
-
-      return {
-        ...state,
-        items,
-        totalQty,
-        totalPrice,
-        loading: false
-      };
+      return { ...state, items, totalQty, totalPrice, loading: false };
     }
-
-
 
     case "ADD": {
       const item = action.payload.item;
@@ -67,27 +43,18 @@ function cartReducer(state, action) {
       };
     }
 
-
     case "UPDATE_QTY": {
-
-     const { itemID, delta } = action.payload;
-     const item = state.items[itemID];
+      const { itemID, delta } = action.payload;
+      const item = state.items[itemID];
 
       if (!item) return state;
-      console.log("Item Qty datatype:", typeof item.qty);
       const newQty = (item.qty) + delta;
 
-      // Hard constraints
       if (newQty < 1) return state;
       if (state.totalQty + delta > 15) return state;
 
       const updatedItem = { ...item, qty: newQty };
-
-      const items = {
-        ...state.items,
-        [itemID]: updatedItem
-      };
-
+      const items = { ...state.items, [itemID]: updatedItem };
       localStorage.setItem(`cart_item_${itemID}`, newQty);
 
       return {
@@ -99,14 +66,11 @@ function cartReducer(state, action) {
       };
     }
 
-
-
-
     case "DELETE": {
       const itemID = action.payload.itemID;
       const items = { ...state.items };
       const item = items[itemID];
-      if (!item) return state; // Item not found, no deletion
+      if (!item) return state;
       const { qty, price } = item;
       delete items[itemID];
       localStorage.removeItem(`cart_item_${itemID}`);
@@ -117,11 +81,11 @@ function cartReducer(state, action) {
         loading: false
       };
     }
-    
 
     case "CLEAR":
       localStorage.clear();
       return initialState;
+
     case "ERROR":
       console.error(action.payload.message);
       return { ...state, loading: false };
@@ -131,16 +95,12 @@ function cartReducer(state, action) {
   }
 }
 
-
 export const CartProvider = ({ children }) => {
   const {userState} = useContext(AuthContext);
   const [cartState, dispatchCart] = useReducer(cartReducer, initialState);
 
-  // ---------------------------
-  // Fetch cart (hydrate)
-  // ---------------------------
   const fetchCart = async () => {
-      if(!userState){
+      if(!userState?._id){
         dispatchCart({ type: "CLEAR" });
         return;
       }
@@ -154,7 +114,6 @@ export const CartProvider = ({ children }) => {
       if (!res.ok) throw new Error(data.errors[0]);
 
       let cartItems = {};
-      console.log("Cart items from server:", data.items);
       data.items.forEach(item => {
         cartItems[item._id.toString()] = item;
       });
@@ -164,22 +123,12 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // ---------------------------
-  // Cart mutations
-  // ---------------------------
-
   const updateQuantity = (itemID, delta) => {
-    dispatchCart({
-      type: "UPDATE_QTY",
-      payload: { itemID, delta }
-    });
+    dispatchCart({ type: "UPDATE_QTY", payload: { itemID, delta } });
   };
 
-
-
   const addToCart = async (itemID) => {
-    if(!userState) return;
-    console.log("Adding to cart:", itemID);
+    if(!userState?._id) return;
     try {
       dispatchCart({ type: "LOADING" });
       const res = await fetch(baseURL+"/cart/add", {
@@ -196,14 +145,13 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-
   const removeItem = async (foodItemID) => {
     try {
       dispatchCart({ type: "LOADING" });
-      const res = await fetch(
-        `${baseURL}/cart/remove/${foodItemID}`,
-        { method: "DELETE", credentials: "include" }
-      );
+      const res = await fetch(`${baseURL}/cart/remove/${foodItemID}`, { 
+        method: "DELETE", 
+        credentials: "include" 
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.errors?.[0]);
       const itemID = data.itemID;
@@ -232,11 +180,12 @@ export const CartProvider = ({ children }) => {
     dispatchCart({ type: isLoading ? "LOADING" : "IDLE" });
   };
 
-
+  // FIX: Watch the primitive ID string to kill the infinite loop
   useEffect(() => {
-    fetchCart();
-  }, [userState]);
-
+    if (userState?._id) {
+      fetchCart();
+    }
+  }, [userState?._id]);
 
   const value = useMemo(() => ({
     ...cartState,
@@ -248,11 +197,8 @@ export const CartProvider = ({ children }) => {
     setCartLoading
   }), [cartState]);
 
-
   return (
-    <CartContext.Provider
-      value={value}
-    >
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, createContext, useMemo } from "react";
+import { useEffect, useReducer, createContext, useMemo, useCallback } from "react";
 import useAuth from "../hooks/useAuth";
 
 // 1. URL FIX
@@ -47,12 +47,12 @@ const OrderManagementProvider = ({children}) => {
 
   const [activeOrdersState, dispatchState] = useReducer(activeOrderReducer, initialActiveOrderState);
 
-  const fetchActiveOrders = async () => {
-    // dispatchState({type:"LOADING"}); // Commented out to prevent flickering on auto-refresh
-    if(!userState) return; // <-- HIS FIX KEPT HERE
+  // Memoize the fetch function to keep its memory reference stable
+  const fetchActiveOrders = useCallback(async () => {
+    // Only fetch if we have a valid user ID string
+    if(!userState?._id) return; 
     
     try {
-      // ✅ CHANGED: /admin to /protected (OUR FIX KEPT HERE)
       const res = await fetch(baseURL + "/protected/active-orders", { 
         method: "GET",
         credentials: "include"
@@ -67,13 +67,12 @@ const OrderManagementProvider = ({children}) => {
       dispatchState({type: "ERROR", payload: {message: err.message}});
       console.error(err.message);
     }
-  }
+  }, [userState?._id]); // Only recreate this function if the user ID string changes
 
-  // PROCESS ORDER (Move from Pending -> Preparing -> Ready)
-  const processOrder = async (orderId, fullfillment_status) => {
+  // PROCESS ORDER
+  const processOrder = useCallback(async (orderId, fullfillment_status) => {
      dispatchState({type:"LOADING"});
      try {
-        // ✅ CHANGED: /admin to /protected
         const res = await fetch(baseURL + "/protected/process-order", {
            method: "POST",
            headers: {"Content-Type": "application/json"},
@@ -87,13 +86,12 @@ const OrderManagementProvider = ({children}) => {
         dispatchState({type:"ERROR", payload:{message:err.message}});
         console.error(err.message);
      }  
-  }
+  }, [fetchActiveOrders]);
 
-  // FULFILL ORDER (Verify OTP and Serve)
-  const fullfillOrder = async (orderId, orderOTP) => {
+  // FULFILL ORDER
+  const fullfillOrder = useCallback(async (orderId, orderOTP) => {
     dispatchState({type:"LOADING"});
     try {
-      // ✅ CHANGED: /admin to /protected
       const res = await fetch(baseURL + "/protected/fullfill-order", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -108,33 +106,32 @@ const OrderManagementProvider = ({children}) => {
       dispatchState({type:"ERROR", payload: {message: err.message}});
       console.error(err);
     }
-  }
+  }, [fetchActiveOrders]);
 
-  // Initial Fetch
+  // Initial Fetch - Dependency is now the primitive string ID, not the object
   useEffect(() => {
-    if(!userState) return;
+    if(!userState?._id) return;
      fetchActiveOrders();
-  }, [userState]);
+  }, [userState?._id, fetchActiveOrders]);
 
-  // FIX 3: Add userState to the dependency array so interval clears on logout
+  // Polling Interval - Dependency is primitive string ID
   useEffect(() => {
-    if(!userState) return;
+    if(!userState?._id) return;
     const intervalId = setInterval(() => {
        fetchActiveOrders();
     }, 15000);
     
-    // This cleanup function will now properly run when userState becomes null!
     return () => clearInterval(intervalId);
-  }, [userState]);
+  }, [userState?._id, fetchActiveOrders]);
   
+  // Memoize the context value
   const value = useMemo(() => ({
     ...activeOrdersState,
     processOrder,
     fullfillOrder,
     fetchActiveOrders
-  }), [activeOrdersState]);
+  }), [activeOrdersState, processOrder, fullfillOrder, fetchActiveOrders]);
 
-  // 3. PROVIDER FIX
   return (
     <OrderManagementContext.Provider value={value}>
       {children}

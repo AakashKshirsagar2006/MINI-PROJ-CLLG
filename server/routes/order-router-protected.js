@@ -21,6 +21,7 @@ router.use((req, res, next) => {
 router.get("/active-orders", async (req, res) => {
   try {
     const activeOrders = await Order.find({
+      // Kept "PREPARING" here just in case any old orders are stuck in the DB
       fullfillment_status: { $in: ["PENDING", "PREPARING", "READY"] }
     });
     return res.json({ activeOrders });
@@ -38,6 +39,7 @@ router.post("/process-order", async (req, res) => {
     return res.status(400).json({ message: "Bad Request" });
   }
 
+  // This perfectly handles our new direct jump to "READY"
   if (!["PREPARING", "READY"].includes(fullfillment_status)) {
     return res.status(400).json({ message: "Invalid Status" });
   }
@@ -59,14 +61,15 @@ router.post("/process-order", async (req, res) => {
 
 // POST: Verify OTP and MARK AS SERVED (This triggers the Archive!)
 router.post("/fullfill-order", async (req, res) => {
+  // Still extracting orderOTP so the frontend payload doesn't crash it
   const { orderId, orderOTP } = req.body;
 
-  if (!orderId || !orderOTP) {
-    return res.status(400).json({ message: "Order ID and OTP are required" });
+  if (!orderId) {
+    return res.status(400).json({ message: "Order ID is required" });
   }
 
   try {
-    // 1. First, check OTP validity (Read-Only)
+    // 1. Fetch Order
     const activeOrder = await Order.findById(orderId);
     
     if (!activeOrder) {
@@ -77,13 +80,14 @@ router.post("/fullfill-order", async (req, res) => {
       return res.status(400).json({ message: "Order must be READY before serving" });
     }
 
-    // OTP CHECK
-    if (String(orderOTP) !== String(activeOrder.orderOTP)) {
-      return res.status(403).json({ message: "Incorrect OTP. Please ask user to check again." });
-    }
+    // ==========================================
+    // 🛑 OTP CHECK HAS BEEN BYPASSED 🛑
+    // ==========================================
+    // if (String(orderOTP) !== String(activeOrder.orderOTP)) {
+    //   return res.status(403).json({ message: "Incorrect OTP. Please ask user to check again." });
+    // }
 
-    // 2. OTP MATCHED! Now we move to Archive.
-    // We use the helper function which handles the Transaction/Delete/Save internally.
+    // 2. We move to Archive directly without checking OTP!
     const success = await archiveOrder(orderId, "SERVED");
 
     if (success) {

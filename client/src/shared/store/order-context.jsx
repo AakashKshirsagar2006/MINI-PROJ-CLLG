@@ -1,7 +1,8 @@
-
 import { useReducer, useMemo, createContext, useContext, useEffect, useState } from "react";
 import { useCart } from "./cart-context";
 import useAuth from "../hooks/useAuth";
+import loadRazorpay from "../utilities/loadRazorpay"; 
+
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const OrderContext = createContext(null);
@@ -46,7 +47,7 @@ const orderReducer = (state, action) => {
 export const OrderProvider = ({ children }) => {
   const { setCartLoading, clearCart } = useCart();
   const {userState} = useAuth();
-  // 🔄 SIMPLE TRIGGER
+  
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const initialOrderState = {
@@ -60,11 +61,7 @@ export const OrderProvider = ({ children }) => {
 
   const triggerRefresh = () => setRefreshTrigger(prev => prev + 1);
 
-  // ==========================================
-  // --- VERIFY PAYMENT ---
-  // ==========================================
   const verifyPayment = async (response, orderId) => {
-    
     try {
       dispatchOrderState({type:"LOADING"});
       const verifyRes = await fetch(baseURL+"/payments/verify", {
@@ -82,23 +79,18 @@ export const OrderProvider = ({ children }) => {
       if (!verifyRes.ok) {
         throw new Error("Payment verification failed");
       }
-      console.log(" Verified. Refreshing...");
+      console.log("Verified. Refreshing...");
       dispatchOrderState({ type: "RESET_ORDER_STATE" });
-      triggerRefresh(); // Force update
+      triggerRefresh(); 
 
     } catch (err) {
-      
       console.error(err);
       dispatchOrderState({ type: "ERROR", payload: { message: "Payment Verification Failed" } });
     }
   };
 
-  // ==========================================
-  // --- FETCH ORDERS ---
-  // ==========================================
   const fetchOrders = async () => {
-    if(!userState) return;
-    // Silent fetch (don't set global loading to avoid UI flicker during polling)
+    if(!userState?._id) return;
     try {
       const res = await fetch(baseURL+"/orders/my-orders", {
         method: "GET",
@@ -113,11 +105,8 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
-  // ==========================================
-  // --- CREATE ORDER (THE CLEAN SLATE LOGIC) ---
-  // ==========================================
   const createOrder = async (cartItems) => {
-    if(!userState) return;
+    if(!userState?._id) return;
     let requestedOrderDetails = [];
     Object.keys(cartItems).forEach(key => {
       requestedOrderDetails.push({ foodItemId: key, qty: cartItems[key].qty });
@@ -140,46 +129,16 @@ export const OrderProvider = ({ children }) => {
       }
 
       const data = await res.json();
-      const { orderDetails, razorpay } = data;
+      const { orderDetails } = data;
 
-      // 1. Store Pending State
       dispatchOrderState({
         type: "CREATE_ORDER",
         payload: { orderDetails }
       });
 
-      // 2. 🗑️ NUKE THE CART IMMEDIATELY
       await clearCart(); 
-      setCartLoading(false); // Stop loading so they see the empty cart/order page
+      setCartLoading(false); 
       
-      //NO need for this shit. Now do payment will handle all cases
-      // 3. Open Razorpay
-      // const options = {
-      //   key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      //   amount: razorpay.amount,
-      //   currency: razorpay.currency,
-      //   name: "College Canteen",
-      //   description: "Food Order",
-      //   order_id: razorpay.orderId,
-      //   handler: async function (response) {
-      //       setCartLoading(true);
-      //       await verifyPayment(response, orderDetails._id);
-      //       setCartLoading(false);
-      //   },
-      //   prefill: {
-      //     name: orderDetails.userName,
-      //     email: orderDetails.userEmail
-      //   },
-      //   theme: { color: "#f97316" },
-      //   modal: {
-      //       ondismiss: function() {
-      //       }
-      //   }
-      // };
-
-      // const rzp = new window.Razorpay(options);
-      // rzp.open();
-
     } catch (err) {
       console.log(err.message);
       dispatchOrderState({ type: "ERROR", payload: { message: err.message } });
@@ -187,7 +146,7 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
- const doPayment = (orderObj) => {
+  const doPayment = async (orderObj) => {
       if(!orderObj || !orderObj.razorpayOrderId) return;
       
       const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
@@ -202,6 +161,15 @@ export const OrderProvider = ({ children }) => {
       }
 
       dispatchOrderState({ type: "IDLE" });
+
+      const isLoaded = await loadRazorpay();
+      if (!isLoaded) {
+          dispatchOrderState({ 
+              type: "ERROR", 
+              payload: { message: "Razorpay SDK failed to load. Please check your internet connection." } 
+          });
+          return;
+      }
 
       try {
           const options = {
@@ -284,8 +252,11 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
-  // Initial Fetch
-  useEffect(() => { fetchOrders(); }, []);
+  // FIX: Watch the primitive ID and the refreshTrigger so verified payments instantly reload the queue
+  useEffect(() => { 
+    if (!userState?._id) return;
+    fetchOrders(); 
+  }, [userState?._id, refreshTrigger]);
 
   const value = useMemo(() => ({
     ...orderState,
