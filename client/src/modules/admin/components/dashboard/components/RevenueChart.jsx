@@ -1,28 +1,34 @@
 import React, { useState } from 'react';
-import { IoInformationCircleOutline, IoTrendingUp, IoCalendarOutline } from "react-icons/io5";
+import { IoInformationCircleOutline, IoCalendarOutline } from "react-icons/io5";
 
-const RevenueChart = () => {
-  // Mock Data: 12 data points for a "Yearly" view or "Hourly" view
-  const data = [
-    { label: "Jan", value: 45000, orders: 120 },
-    { label: "Feb", value: 32000, orders: 98 },
-    { label: "Mar", value: 55000, orders: 145 },
-    { label: "Apr", value: 48000, orders: 110 },
-    { label: "May", value: 62000, orders: 160 },
-    { label: "Jun", value: 58000, orders: 155 },
-    { label: "Jul", value: 72000, orders: 185 },
-    { label: "Aug", value: 68000, orders: 170 },
-    { label: "Sep", value: 52000, orders: 130 },
-    { label: "Oct", value: 49000, orders: 125 },
-    { label: "Nov", value: 75000, orders: 195 },
-    { label: "Dec", value: 85000, orders: 210 },
-  ];
+const RevenueChart = ({ graphData = [] }) => {
+  // 1. Calculate the total for the chart header directly from the backend data
+  const chartTotal = graphData.reduce((sum, item) => sum + (item.revenue || 0), 0);
 
-  // Calculate scaling
-  const maxValue = Math.max(...data.map(d => d.value));
-  const yAxisLabels = [80000, 60000, 40000, 20000, 0]; // Manual steps for cleaner grid
+  // 2. Dynamic Y-Axis Scaling (Automatically adjusts based on your highest earning month)
+  // Default to 1000 if there's no data to prevent visual glitches
+  const maxDataValue = Math.max(...graphData.map(d => d.revenue || 0), 1000);
+  
+  // Calculate a clean "step" for the grid lines (rounds up to the nearest thousand)
+  const step = Math.ceil(maxDataValue / 4 / 1000) * 1000; 
+  const yAxisLabels = [step * 4, step * 3, step * 2, step * 1, 0];
+  const maxValue = step * 4; // Use the top grid line as the 100% height limit
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  // Get today's date for the footer
+  const formattedDate = new Date().toLocaleDateString('en-IN', {
+    day: 'numeric', month: 'short', year: 'numeric'
+  });
+
+  // Fallback if the database is completely empty
+  if (!graphData || graphData.length === 0) {
+      return (
+          <div className="w-full h-80 bg-slate-50 rounded-[2.5rem] flex items-center justify-center border border-slate-100">
+              <span className="text-slate-400 font-bold">No revenue data available yet.</span>
+          </div>
+      )
+  }
 
   return (
     <div className="w-full bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-lg shadow-slate-200/50">
@@ -32,24 +38,22 @@ const RevenueChart = () => {
         <div>
           <h3 className="text-2xl font-serif font-bold text-slate-900 flex items-center gap-2">
             Revenue Analytics
-            <IoInformationCircleOutline className="text-slate-300 text-lg cursor-help hover:text-slate-500 transition" title="Net revenue after taxes" />
+            <IoInformationCircleOutline className="text-slate-300 text-lg cursor-help hover:text-slate-500 transition" title="Total gross revenue recorded" />
           </h3>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-sm font-medium text-slate-500">Total Income</span>
-            <span className="text-3xl font-bold text-slate-900 tracking-tight">₹7,01,000</span>
-            <span className="flex items-center gap-1 text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">
-              <IoTrendingUp /> +14.2%
+            <span className="text-sm font-medium text-slate-500">Recorded Income</span>
+            {/* Formatted perfectly to Indian Rupees */}
+            <span className="text-3xl font-bold text-slate-900 tracking-tight">
+              ₹{chartTotal.toLocaleString('en-IN')}
             </span>
           </div>
         </div>
 
-        {/* Filters */}
+        {/* Removed the Week/Month/Year filters as requested to keep it simple */}
         <div className="flex bg-slate-50 p-1 rounded-xl self-start md:self-auto">
-          {['Week', 'Month', 'Year'].map((filter, idx) => (
-             <button key={filter} className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${idx === 2 ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>
-               {filter}
-             </button>
-          ))}
+          <button className="px-4 py-2 text-xs font-bold rounded-lg transition-all bg-white text-slate-900 shadow-sm">
+            Monthly Overview
+          </button>
         </div>
       </div>
 
@@ -73,8 +77,8 @@ const RevenueChart = () => {
 
         {/* BARS CONTAINER */}
         <div className="absolute inset-0 flex items-end justify-between pl-14 pr-2 pb-6">
-          {data.map((item, index) => {
-            const heightPercentage = (item.value / maxValue) * 100;
+          {graphData.map((item, index) => {
+            const heightPercentage = (item.revenue / maxValue) * 100;
             const isHovered = hoveredIndex === index;
 
             return (
@@ -87,44 +91,37 @@ const RevenueChart = () => {
                 
                 {/* TOOLTIP (Appears on Hover) */}
                 <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none transition-all duration-300 ease-out origin-bottom
-                    ${isHovered ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'}`}>
+                  ${isHovered ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'}`}>
+                  
+                  <div className="bg-slate-900 text-white text-[10px] md:text-xs p-3 rounded-xl shadow-xl flex flex-col items-center min-w-[100px] relative">
+                    {/* Triangle Arrow */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900"></div>
                     
-                    <div className="bg-slate-900 text-white text-[10px] md:text-xs p-3 rounded-xl shadow-xl flex flex-col items-center min-w-[100px] relative">
-                        {/* Triangle Arrow */}
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900"></div>
-                        
-                        <span className="font-bold text-slate-300 mb-1">{item.label} Stats</span>
-                        <div className="flex justify-between w-full gap-3 border-t border-white/10 pt-1 mt-1">
-                            <span>Revenue</span>
-                            <span className="font-bold">₹{item.value.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between w-full gap-3">
-                            <span>Orders</span>
-                            <span className="font-bold text-orange-400">{item.orders}</span>
-                        </div>
+                    <span className="font-bold text-slate-300 mb-1">{item.monthLabel}</span>
+                    <div className="flex justify-between w-full gap-3 border-t border-white/10 pt-1 mt-1">
+                      <span>Revenue</span>
+                      <span className="font-bold">₹{(item.revenue || 0).toLocaleString('en-IN')}</span>
                     </div>
+                  </div>
                 </div>
 
                 {/* THE BAR */}
-                {/* - We use 'h-[X%]' to set height based on data.
-                   - 'max-h-[85%]' ensures it doesn't hit the very top label.
-                */}
                 <div 
                   className={`w-2 md:w-6 lg:w-8 rounded-t-xl transition-all duration-500 ease-out relative overflow-hidden
                     ${isHovered ? 'bg-orange-500 shadow-lg shadow-orange-500/30 -translate-y-1' : 'bg-slate-200'}`}
                   style={{ height: `${heightPercentage * 0.85}%` }} // Scaling down slightly to fit grid
                 >
-                    {/* Gradient Overlay for 3D effect */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  {/* Gradient Overlay for 3D effect */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
 
-                {/* X-AXIS LABEL */}
+                {/* X-AXIS LABEL (e.g., "Jan", "Feb") */}
                 <span className={`absolute -bottom-6 text-[10px] md:text-xs font-bold transition-colors duration-300
-                    ${isHovered ? 'text-orange-600 scale-110' : 'text-slate-400'}`}>
-                  {item.label}
+                  ${isHovered ? 'text-orange-600 scale-110' : 'text-slate-400'}`}>
+                  {item.monthLabel}
                 </span>
 
-                {/* Vertical Hover Guide Line (Optional, adds "Graph" feel) */}
+                {/* Vertical Hover Guide Line */}
                 <div className={`absolute top-0 bottom-0 w-px bg-orange-500/10 -z-10 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}></div>
 
               </div>
@@ -138,16 +135,12 @@ const RevenueChart = () => {
         <div className="flex gap-6">
             <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                <span>Current Period</span>
-            </div>
-            <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-slate-200 rounded-full"></div>
-                <span>Projected</span>
+                <span>Active Revenue</span>
             </div>
         </div>
         <div className="flex items-center gap-1 font-medium">
             <IoCalendarOutline />
-            Last updated: Today, 2:30 PM
+            Live Database Sync • {formattedDate}
         </div>
       </div>
 

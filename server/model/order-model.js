@@ -107,9 +107,13 @@ const OrderSchema = new mongoose.Schema(
 
     createdAt: {
       type: Date,
-      default: Date.now
+      default: Date.now,
+      index: true
     },
-    paidAt: Date
+    paidAt:{
+      type: Date,
+      index: true
+    }
   },
   { versionKey: false }
 );

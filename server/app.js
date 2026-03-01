@@ -34,7 +34,7 @@ app.use("/uploads", express.static("uploads", {
   maxAge: "4d",   
 }));
 
-//app.use("/payment", paymentRouter);
+
 app.use("/webhook", require("./routes/razorpay-webhook"));
 app.use(express.json())
 app.use(express.urlencoded({extended:true}));
@@ -72,7 +72,7 @@ app.use('/cart',validateCartSession);
 app.use(cartRouter);
 app.use('/orders',orderRouter);
 app.use("/payments", require("./routes/payment-router"));
-app.use("/admin", analyticsRouter);
+app.use('/admin/analytics', analyticsRouter);
 app.use('/admin', adminRouter); // added for admin actions like stock modification and adding food items
 app.use('/protected',protectedOrderRouter);
 mongoose.connect(process.env.MONGO_URI).then(()=>{

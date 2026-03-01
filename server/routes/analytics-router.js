@@ -1,44 +1,48 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-// Import BOTH collections
+
 const Order = require('../model/order-model');
 const ArchivedOrder = require('../model/archived-order-model');
+// FIXED: Importing the dedicated Staff model instead of User
+const Staff = require('../model/staff-model'); 
 
-// ROUTE: GET /admin/analytics/dashboard
 router.get('/dashboard', async (req, res) => {
     try {
         const today = new Date();
         const startOfToday = new Date(today.setHours(0, 0, 0, 0));
-        const startOfMonth = new Date(new Date().setDate(1)); // 1st of this month
         
-        // WE QUERY THE 'ARCHIVE' (Cold Data) AND UNION IT WITH 'ACTIVE' (Hot Data)
+        // Get the 1st day of the current month
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1); 
+
+        // 1. FAST COUNTS FOR INDIVIDUAL METRICS
+        // Get currently pending orders from the hot collection
+        const pendingOrdersCount = await Order.countDocuments({ fullfillment_status: "PENDING" });
+        
+        // FIXED: Count documents directly from the Staff collection
+        const activeStaffCount = await Staff.countDocuments({});
+
+        // 2. THE MASTER AGGREGATION PIPELINE
+        // We query the Archive and Union with Active Orders for complete financial history
         const stats = await ArchivedOrder.aggregate([
-            // 1. "Glue" the Active Orders onto this list
             { 
                 $unionWith: { 
-                    coll: "orders", // MUST match your actual MongoDB collection name (usually lowercase 'orders')
-                    pipeline: [ { $match: { status: "PAID" } } ] // Only bring in PAID active orders
+                    coll: "orders", 
+                    pipeline: [ { $match: { status: "PAID" } } ] 
                 } 
             },
-            // 2. Filter: Double check we only have Money (PAID orders) from both sides
             { $match: { status: "PAID" } },
-            
-            // 3. Run the Calculations (Same as before)
             {
                 $facet: {
-                    // Total Lifetime Stats
                     "lifetime": [
                         { 
                             $group: { 
                                 _id: null, 
                                 totalRevenue: { $sum: "$amount" }, 
-                                totalOrders: { $count: {} },
-                                firstOrderDate: { $min: "$createdAt" }
+                                totalOrders: { $count: {} }
                             } 
                         }
                     ],
-                    // Today's Stats
                     "today": [
                         { $match: { paidAt: { $gte: startOfToday } } },
                         { 
@@ -49,18 +53,6 @@ router.get('/dashboard', async (req, res) => {
                             } 
                         }
                     ],
-                    // This Month's Stats
-                    "month": [
-                        { $match: { paidAt: { $gte: startOfMonth } } },
-                        { 
-                            $group: { 
-                                _id: null, 
-                                monthRevenue: { $sum: "$amount" }, 
-                                monthOrders: { $count: {} } 
-                            } 
-                        }
-                    ],
-                    // Bar Chart Data (Last 12 Months)
                     "revenueGraph": [
                         { 
                             $group: { 
@@ -68,8 +60,7 @@ router.get('/dashboard', async (req, res) => {
                                     year: { $year: "$paidAt" }, 
                                     month: { $month: "$paidAt" } 
                                 },
-                                monthlyTotal: { $sum: "$amount" },
-                                orderCount: { $count: {} }
+                                monthlyTotal: { $sum: "$amount" }
                             } 
                         },
                         { $sort: { "_id.year": 1, "_id.month": 1 } },
@@ -79,36 +70,31 @@ router.get('/dashboard', async (req, res) => {
             }
         ]);
 
-        // 4. Formatting the Data (Safety checks if DB is empty)
+        // 3. FORMAT THE EXTRACTED DATA
         const result = stats[0];
-        const lifetimeData = result.lifetime[0] || { totalRevenue: 0, totalOrders: 0, firstOrderDate: new Date() };
+        const lifetimeData = result.lifetime[0] || { totalRevenue: 0, totalOrders: 0 };
         const todayData = result.today[0] || { todayRevenue: 0, todayOrders: 0 };
-        const monthData = result.month[0] || { monthRevenue: 0, monthOrders: 0 };
 
-        // Calculate Average Orders Per Day
-        const daysOpen = Math.max(1, Math.ceil((new Date() - new Date(lifetimeData.firstOrderDate)) / (1000 * 60 * 60 * 24)));
-        const avgOrdersPerDay = (lifetimeData.totalOrders / daysOpen).toFixed(1);
-
-        // Format Graph Data for Frontend
+        // Format the graph data for the frontend chart
         const graphData = result.revenueGraph.map(item => {
             const date = new Date(item._id.year, item._id.month - 1);
             return {
-                label: date.toLocaleString('default', { month: 'short', year: 'numeric' }),
-                revenue: item.monthlyTotal,
-                orders: item.orderCount
+                monthLabel: date.toLocaleString('default', { month: 'short' }),
+                revenue: item.monthlyTotal
             };
         });
 
+        // 4. SEND CLEAN JSON TO FRONTEND
         res.status(200).json({
-            cards: {
-                todayRevenue: todayData.todayRevenue,
-                todayOrders: todayData.todayOrders,
-                monthRevenue: monthData.monthRevenue,
+            metrics: {
                 totalRevenue: lifetimeData.totalRevenue,
                 totalOrders: lifetimeData.totalOrders,
-                avgOrdersPerDay: avgOrdersPerDay
+                todayRevenue: todayData.todayRevenue,
+                todayOrders: todayData.todayOrders,
+                pendingOrders: pendingOrdersCount,
+                activeStaff: activeStaffCount
             },
-            graph: graphData
+            graphData: graphData
         });
 
     } catch (err) {
