@@ -1,6 +1,5 @@
 
 require('dotenv').config();
-const https = require('https');
 const fs = require('fs');
 const express = require('express')
 const cors = require('cors')
@@ -18,15 +17,11 @@ const startCronJobs = require('./cron/order-cleanup');
 const analyticsRouter = require('./routes/analytics-router');
 const adminRouter = require('./routes/admin-action-router');
 
-const options = {
-  key: fs.readFileSync(process.env.SSL_KEY),
-  cert: fs.readFileSync(process.env.SSL_CERT)
-};
 const app = express();
 
 
 app.use(cors({
-  origin: [process.env.CORS_URI, "https://localhost:5173"],
+  origin: [process.env.CORS_URI,],
   credentials: true                 
 }));
 
@@ -43,7 +38,7 @@ app.use('/uploads', express.static('uploads')); // img ke liye static folder ser
 
 app.use(session({
   name: 'college_canteen.sid',
-  secret: 'made_by_Sigma_developer',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,  
   store: new MongoStore({
@@ -75,11 +70,12 @@ app.use("/payments", require("./routes/payment-router"));
 app.use('/admin/analytics', analyticsRouter);
 app.use('/admin', adminRouter); // added for admin actions like stock modification and adding food items
 app.use('/protected',protectedOrderRouter);
+
 mongoose.connect(process.env.MONGO_URI).then(()=>{
 startCronJobs();
 
-https.createServer(options,app).listen(3000,()=>{
-  console.log("Server is listining at https://localhost:3000");
+app.listen(process.env.PORT,()=>{
+  console.log("Server is listining at port",process.env.PORT);
 })
 }).catch(err=>{
   console.log("Failed to connect with mongodb\n",err);
