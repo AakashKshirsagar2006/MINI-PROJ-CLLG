@@ -23,8 +23,6 @@ const app = express();
 app.use(cors({
   origin: process.env.CORS_URI,
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use("/uploads", express.static("uploads", {
