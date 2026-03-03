@@ -18,11 +18,14 @@ const analyticsRouter = require('./routes/analytics-router');
 const adminRouter = require('./routes/admin-action-router');
 
 const app = express();
+app.set('trust proxy', 1); // trust first proxy if behind a proxy (e.g., when deployed on platforms like Heroku or Render)
 
 
 app.use(cors({
-  origin: process.env.CORS_URI,
+  origin: process.env.CORS_URI, 
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
 }));
 
 app.use("/uploads", express.static("uploads", {
