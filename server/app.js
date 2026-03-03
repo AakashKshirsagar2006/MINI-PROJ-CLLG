@@ -21,8 +21,10 @@ const app = express();
 
 
 app.use(cors({
-  origin: [process.env.CORS_URI,],
-  credentials: true                 
+  origin: process.env.CORS_URI,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use("/uploads", express.static("uploads", {
@@ -33,7 +35,6 @@ app.use("/uploads", express.static("uploads", {
 app.use("/webhook", require("./routes/razorpay-webhook"));
 app.use(express.json())
 app.use(express.urlencoded({extended:true}));
-//app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads', express.static('uploads')); // img ke liye static folder serve krne ke liye
 
 app.use(session({
@@ -52,9 +53,8 @@ app.use(session({
   cookie: {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 14, 
-    sameSite: 'lax',
-    //sameSite: 'none',
-    secure: false
+    sameSite: 'none',
+    secure: true,
   }
 }));
 
