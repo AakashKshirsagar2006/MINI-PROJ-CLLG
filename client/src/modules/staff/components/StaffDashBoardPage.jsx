@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useAuth from '../../../shared/hooks/useAuth';
 import PlainMessage from '../../../shared/components/PlainMessage';
 import useOrderManagement from '../../../shared/hooks/useOrderManagement';
 import OrderCard from './OrderCard';
 import ReadyOrderCard from './ReadyOrderCard';
 import { IoSearchOutline } from "react-icons/io5";
+import OpenionPopup from '../../../shared/components/OpenionPopup';
 
 const StaffDashBoardPage = ({ orderState }) => {
+
+  const [openionPopupOpen, setOpenionPopupOpen] = useState(false);
+  const [openionResult, setOpenionResult] = useState(null); // "proceed" or "abort"
+  const [selectedOrder, setSelectedOrder] = useState(null); // Store the UID of the order being acted upon
   const { pending, ready } = useOrderManagement();
   const { userState } = useAuth();
   
   // Real-time Search State
   const [searchTerm, setSearchTerm] = useState("");
+
+  const { fullfillOrder, loading } = useOrderManagement();
 
   let ordersToDisplay = [];
   let pageTitle = "";
@@ -30,6 +37,24 @@ const StaffDashBoardPage = ({ orderState }) => {
       pageTitle = "Orders";
   }
 
+  useEffect(()=>{
+    if(openionResult === "proceed" && selectedOrder) {
+      fullfillOrder(selectedOrder._id.toString(), "NO_OTP").then(()=>{
+        setSelectedOrder(null);
+        setOpenionPopupOpen(false);
+        setOpenionResult(null);
+      }).catch((err)=>{
+        setSelectedOrder(null);
+        setOpenionPopupOpen(false);
+        setOpenionResult(null);
+      });
+    }
+  },[openionResult, selectedOrder]);
+
+  const handleFullfillment = (order, otp) => {
+    setSelectedOrder(order);
+    setOpenionPopupOpen(true);
+  }
   // Security Gate
   if (userState?.user_type == 'common') {
     return <PlainMessage head="Unauthorized" linkTo="Home" link="/">Access Restricted</PlainMessage>;
@@ -55,7 +80,7 @@ const StaffDashBoardPage = ({ orderState }) => {
   });
 
   return (
-    <main className="max-w-[1600px] mx-auto px-4 md:px-6 pt-8 pb-32 md:pb-12">
+    <main className="max-w-400 mx-auto px-4 md:px-6 pt-8 pb-32 md:pb-12">
       
       {/* Control Bar */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -94,13 +119,21 @@ const StaffDashBoardPage = ({ orderState }) => {
         {filteredOrders.map((order) => (
           <div key={order._id || order.id} className="h-full">
             {orderState === "READY" 
-              ? <ReadyOrderCard order={order} orderState={orderState}/> 
+              ? <ReadyOrderCard handleFullfillment={handleFullfillment} order={order} orderState={orderState}/> 
               : <OrderCard order={order} orderState={orderState}/>
             }
           </div>
         ))}
       </div>
 
+      
+    <OpenionPopup isOpen={openionPopupOpen} onClose={()=>setOpenionPopupOpen(false)} head="Confirm Action" body={
+  <>
+    Are you sure you want to serve this order?<br />
+    Order UID: {selectedOrder?.orderUID}<br />
+    User Name: {selectedOrder?.userName}
+  </>
+} setOpenion={setOpenionResult}/>
     </main>
   );
 };

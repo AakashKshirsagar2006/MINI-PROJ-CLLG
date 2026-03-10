@@ -30,7 +30,7 @@ import StaffManagement from '../components/dashboard/StaffManagement';
 const AdminDashboard = () => {
   // --- STATE MANAGEMENT ---
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeView, setActiveView] = useState('dashboard'); // dashboard, menu, staff, history
+  const [activeView, setActiveView] = useState('analytics'); // dashboard, menu, staff, history
    const [nestedNavigationTabs, setNestedNavigationTabs] = useState(["ADD","UPDATE","DELETE"])
 
  const [foodManagementPageState, setFoodManagementPageState] = useState("ADD");
@@ -87,14 +87,14 @@ const AdminDashboard = () => {
   </div>
 
   {/* Middle Section: Navigation */}
-  <div className="flex-none px-2">
+ {activeView === 'menu' &&<div className="flex-none px-2">
      <NestedNavigation setFoodManagementPageState={setFoodManagementPageState} tabs={nestedNavigationTabs}/>
-  </div>
+  </div>}
 
   
 </header>
 
-         {activeView === 'dashboard' && (
+         {activeView === 'analytics' && (
              <AnalyticsPage/>
           )}
 

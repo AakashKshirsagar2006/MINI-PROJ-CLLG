@@ -23,7 +23,7 @@ const StaffModal = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center opacity-100 backdrop-blur-sm">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden transform transition-all">
         <div className="bg-slate-900 px-6 py-4 flex justify-between items-center">
           <h3 className="text-lg font-bold text-white">

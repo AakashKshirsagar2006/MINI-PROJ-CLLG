@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { 
+  IoCheckmarkCircleOutline,
   IoSearch,
   IoReceiptOutline,     
   IoNutritionOutline,   
@@ -7,6 +8,7 @@ import {
   IoSettingsOutline,   
   IoHourglassOutline   
 } from "react-icons/io5";
+import { IoIosSwitch } from "react-icons/io";
 import { FiUserX } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
 import useAuth from "../../../shared/hooks/useAuth";
@@ -24,13 +26,13 @@ const {userState, logout} = useAuth();
             {/* DESKTOP NAVIGATION (Hidden on Mobile) */}
             <nav className="hidden md:flex items-center gap-8">
                 <NavLink to="/admin/" end className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Current Orders</NavLink>
-                <NavLink to="/admin/pending" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Pending</NavLink>
+                <NavLink to="/admin/completed-orders" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Completed</NavLink>
                 <NavLink to="/admin/stock-actions" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Stock Actions</NavLink>
-                <NavLink to="/admin/booking" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Manual Booking</NavLink>
+                {/* <NavLink to="/admin/booking" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Manual Booking</NavLink> */}
                 <NavLink to="/admin/dashboard" className={({isActive}) => `text-sm font-bold transition ${isActive ? 'text-orange-600' : 'text-slate-500 hover:text-slate-900'}`}>Admin Space</NavLink>
             </nav>
 
-            {/* Search & Profile */}
+            {/* Logout */}
             <div className="flex items-center gap-4">
                 <div
                           onClick={userState ? ()=>{logout()} : () => { }}
@@ -55,21 +57,21 @@ const {userState, logout} = useAuth();
             end
             className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? "text-orange-500" : "hover:text-white transition"}`}>
             <div className="relative">
-              <IoReceiptOutline className="h-6 w-6" />
+              <IoReceiptOutline className="h-8 w-8" />
             </div>
-            <span className="text-[10px] font-medium">Orders</span>
+            <span className="text-[12px] font-medium">Orders</span>
           </NavLink>
 
           {/* 2. Pending Orders */}
           <NavLink
-            to={"/admin/pending"}
+            to={"/admin/completed-orders"}
             className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? "text-orange-500" : "hover:text-white transition"}`}>
-            <IoHourglassOutline className="h-6 w-6" />
-            <span className="text-[10px] font-medium">Pending</span>
+            <IoCheckmarkCircleOutline className="h-8 w-8" />
+            <span className="text-[12px] font-medium">Completed</span>
           </NavLink>
 
           {/* 3. Manual Booking (FEATURED FLOATING BUTTON) */}
-          <NavLink
+          {/* <NavLink
             to={"/admin/booking"}
             className={({ isActive }) =>
               `${isActive
@@ -82,17 +84,18 @@ const {userState, logout} = useAuth();
           >
             <IoCreateOutline className="h-6 w-6" />
             {/* Optional Badge if needed */}
-            {/* <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 border border-white text-[8px] font-bold text-white">!</span> */}
-          </NavLink>
-
+            {/* <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 border border-white text-[8px] font-bold text-white">!</span>
+             </NavLink> 
+            */}
+         
           {/* 4. Quick Stock */}
           <NavLink
-            to={"/admin/stock"}
+            to={"/admin/stock-actions"}
             className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? "text-orange-500" : "hover:text-white transition"}`}>
             <div className="relative">
-               <IoNutritionOutline className="w-6 h-6" />
+               <IoIosSwitch className="w-8 h-8" />
             </div>
-            <span className="text-[10px] font-medium">Stock</span>
+            <span className="text-[12px] font-medium">Stock</span>
           </NavLink>
 
           {/* 5. Admin Space */}
@@ -100,9 +103,9 @@ const {userState, logout} = useAuth();
             to={"/admin/dashboard"}
             className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? "text-orange-500" : "hover:text-white transition"}`}>
             <div className="relative">
-               <IoSettingsOutline className="w-6 h-6" />
+               <IoSettingsOutline className="w-8 h-8" />
             </div>
-            <span className="text-[10px] font-medium">Admin</span>
+            <span className="text-[12px] font-medium">Admin</span>
           </NavLink>
 
         </div>

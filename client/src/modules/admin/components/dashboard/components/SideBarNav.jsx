@@ -1,4 +1,5 @@
 import { 
+  IoStatsChart,
   IoGridOutline, 
   IoFastFoodOutline, 
   IoPeopleOutline, 
@@ -6,6 +7,7 @@ import {
   IoSettingsOutline, 
   IoLogOutOutline,
 } from "react-icons/io5";
+import useAuth from "../../../../../shared/hooks/useAuth";
 
 const NavItem = ({ id, icon, label, setActiveView, setIsSidebarOpen, activeView}) => (
     <button 
@@ -21,6 +23,7 @@ const NavItem = ({ id, icon, label, setActiveView, setIsSidebarOpen, activeView}
 );
 
 const SideBarNav = ({toggleSidebar, isSidebarOpen, setActiveView, setIsSidebarOpen, activeView}) => {
+  const {logout} = useAuth();
   return (
     <>
       {/* Mobile Overlay */}
@@ -32,19 +35,19 @@ const SideBarNav = ({toggleSidebar, isSidebarOpen, setActiveView, setIsSidebarOp
             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         {/* Brand */}
-        <div className="p-8 flex items-center gap-3">
+        {/* <div className="p-8 flex items-center gap-3">
            <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-serif font-bold text-xl">C</div>
-           <span className="font-serif font-bold text-2xl text-slate-900">Cantina.</span>
-        </div>
+           <span className="font-serif font-bold text-2xl text-slate-900">FCRIT Canteen</span>
+        </div> */}
     
         {/* Navigation */}
         <nav className="flex-1 space-y-2 mt-4">
-           <NavItem id="dashboard" icon={<IoGridOutline />} label="Overview"
+           <NavItem id="analytics" icon={<IoStatsChart />} label="Analytics"
            setActiveView={setActiveView}
            setIsSidebarOpen={setIsSidebarOpen}
            activeView= {activeView} />
            
-           <NavItem id="menu" icon={<IoFastFoodOutline />} label="Menu Items" setActiveView={setActiveView}
+           <NavItem id="menu" icon={<IoFastFoodOutline />} label="Menu Management" setActiveView={setActiveView}
            setIsSidebarOpen={setIsSidebarOpen} 
            activeView= {activeView}/>
            
@@ -62,7 +65,7 @@ const SideBarNav = ({toggleSidebar, isSidebarOpen, setActiveView, setIsSidebarOp
            <button className="flex items-center gap-3 text-slate-400 hover:text-slate-900 transition text-sm font-bold mb-4">
               <IoSettingsOutline className="text-xl" /> Settings
            </button>
-           <button className="flex items-center gap-3 text-red-400 hover:text-red-600 transition text-sm font-bold">
+           <button onClick={logout} className="flex items-center gap-3 text-red-400 hover:text-red-600 transition text-sm font-bold">
               <IoLogOutOutline className="text-xl" /> Log Out
            </button>
         </div>

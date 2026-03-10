@@ -9,7 +9,7 @@ const router = express.Router();
 router.use((req, res, next) => {
   const user = req.session.user;
   if (!user) return res.status(401).json({ message: "Unauthenticated" });
-  
+  console.log("Authenticated user:", user);
   // Allow both Admin and Staff to perform these actions
   if (user.user_type !== 'admin' && user.user_type !== 'staff') {
     return res.status(403).json({ message: "Unauthorized" });

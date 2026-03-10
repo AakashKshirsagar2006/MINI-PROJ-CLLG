@@ -1,8 +1,8 @@
 import { IoPersonOutline, IoTimeOutline, IoCheckmarkCircle } from 'react-icons/io5';
 import useOrderManagement from '../../../shared/hooks/useOrderManagement';
 
-const ReadyOrderCard = ({ order, orderState }) => {
-  const { fullfillOrder, loading } = useOrderManagement();
+const ReadyOrderCard = ({ order, orderState, handleFullfillment }) => {
+  const { loading } = useOrderManagement();
   
   return (
     <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full border-l-4 border-l-green-500">
@@ -55,7 +55,7 @@ const ReadyOrderCard = ({ order, orderState }) => {
              if(order.fullfillment_status === 'READY') {
                  // Passing a dummy string so the frontend hook doesn't break, 
                  // but backend will just serve it without checking.
-                 fullfillOrder(order._id.toString(), "NO_OTP");
+                 handleFullfillment(order, "NO_OTP");
              }
           }}
           className="flex items-center justify-center gap-2 bg-slate-900 text-white py-4 rounded-xl text-sm font-extrabold hover:bg-green-600 transition shadow-lg shadow-slate-900/20 uppercase tracking-widest">
