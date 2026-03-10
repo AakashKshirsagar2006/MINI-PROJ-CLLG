@@ -13,7 +13,7 @@ async function sendEmail(to, subject, text, html = null) {
     // BREVO SMTP PIPELINE
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
+      port: Number(process.env.SMTP_PORT),
       secure: false, // false because we are using port 587
       auth: {
         user: process.env.EMAIL_USER, 
