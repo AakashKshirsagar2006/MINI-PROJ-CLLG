@@ -18,7 +18,7 @@ const analyticsRouter = require('./routes/analytics-router');
 const adminRouter = require('./routes/admin-action-router');
 
 const app = express();
-//app.set('trust proxy', 1); // trust first proxy if behind a proxy (e.g., when deployed on platforms like Heroku or Render)
+app.set('trust proxy', 1); // trust first proxy if behind a proxy (e.g., when deployed on platforms like Heroku or Render)
 
 
 app.use(cors({
@@ -54,8 +54,8 @@ app.use(session({
   cookie: {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 14, 
-    sameSite: 'lax',
-    secure: false,
+    sameSite: 'none',
+    secure: true,
   }
 }));
 
