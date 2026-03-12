@@ -127,7 +127,12 @@ const StaffDashBoardPage = ({ orderState }) => {
       </div>
 
       
-    <OpenionPopup isOpen={openionPopupOpen} onClose={()=>setOpenionPopupOpen(false)} head="Confirm Action" body={
+    <OpenionPopup isOpen={openionPopupOpen} 
+    handleOnClosePopup={
+      ()=>{
+        setOpenionPopupOpen(false);
+        setSelectedOrder(null);
+      }} head="Confirm Action" body={
   <>
     Are you sure you want to serve this order?<br />
     Order UID: {selectedOrder?.orderUID}<br />
