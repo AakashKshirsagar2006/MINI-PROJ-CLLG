@@ -4,6 +4,7 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import VegIndicator from "./VegIndicator";
 import { useCart } from "../../../shared/store/cart-context";
 import { useOrder } from "../../../shared/store/order-context";
+import toast from "react-hot-toast";
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 
@@ -13,7 +14,11 @@ const FoodItemCard = ({ foodItem}) => {
  
   const isInCart = itemsInCart.includes(foodItem._id.toString());
   const {orderDetails} = useOrder();
-  const buttonDisability = !(!orderDetails)||(!foodItem.availability) || itemsInCart.includes(foodItem._id.toString()) || loading;
+  const buttonDisability = !(!orderDetails) || itemsInCart.includes(foodItem._id.toString()) || loading;
+
+  const handleAddToCart = () => {
+    addToCart(foodItem._id.toString());
+  };
 
   return (
     <>
@@ -47,7 +52,7 @@ const FoodItemCard = ({ foodItem}) => {
 
           <button
             disabled={buttonDisability}
-            onClick={() => addToCart(foodItem._id.toString())}
+            onClick={handleAddToCart}
             className=
             "flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 hover:bg-orange-500 hover:shadow-lg hover:shadow-orange-500/50 transform active:scale-95">
             <span className="flex items-center gap-1">

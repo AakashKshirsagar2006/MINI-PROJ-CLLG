@@ -2,6 +2,7 @@ import { useReducer, useMemo, createContext, useContext, useEffect, useState } f
 import { useCart } from "./cart-context";
 import useAuth from "../hooks/useAuth";
 import loadRazorpay from "../utilities/loadRazorpay"; 
+import toast from "react-hot-toast"; 
 
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
@@ -106,7 +107,10 @@ export const OrderProvider = ({ children }) => {
   };
 
   const createOrder = async (cartItems) => {
-    if(!userState?._id) return;
+    if(Object.keys(cartItems).length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
     let requestedOrderDetails = [];
     Object.keys(cartItems).forEach(key => {
       requestedOrderDetails.push({ foodItemId: key, qty: cartItems[key].qty });

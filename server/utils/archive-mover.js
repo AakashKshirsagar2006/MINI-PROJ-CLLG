@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Order = require('../model/order-model');
 const ArchivedOrder = require('../model/archived-order-model');
+const FoodItems = require('../model/food-item-model');
 
 /**
  * Moves an order from Active -> Archive
@@ -24,6 +25,19 @@ const archiveOrder = async (orderId, finalStatus) => {
         
         // Update the status before saving
         orderData.fullfillment_status = finalStatus; 
+        
+        // --- INDUSTRY-GRADE STOCK DEDUCTION ---
+        // If the order has physically left the kitchen (SERVED), it should permanently deduct stock.
+        if (finalStatus === "SERVED") {
+            for (const item of order.items) {
+                 await FoodItems.updateOne(
+                     { _id: item.foodItemId }, 
+                     { $inc: { quantity: -item.qty, locked_quantity: -item.qty } }, 
+                     { session }
+                 );
+            }
+        }
+        // ----------------------------------------
         
         // 3. Save to 'archivedorders' collection
         await new ArchivedOrder(orderData).save({ session });

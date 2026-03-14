@@ -4,6 +4,7 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import VegIndicator from './VegIndicator';
 import { useOrder } from '../../../shared/store/order-context';
 import { useCart } from '../../../shared/store/cart-context';
+import toast from "react-hot-toast";
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const MenuFoodItemCard = ({ foodItem}) => {
@@ -11,7 +12,11 @@ const MenuFoodItemCard = ({ foodItem}) => {
    const itemsInCart = Object.keys(items);
   const isInCart = itemsInCart.includes(foodItem._id.toString());
   const {orderDetails} = useOrder();
-  const buttonDisability = !(!orderDetails)||(!foodItem.availability) || isInCart || loading;
+  const buttonDisability = !(!orderDetails) || isInCart || loading;
+
+  const handleAddToCart = () => {
+    addToCart(foodItem._id.toString());
+  };
   return (
     <>
       <div className="bg-white p-3 rounded-4xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-orange-100 transition duration-300 group flex flex-col h-full">
@@ -48,7 +53,7 @@ const MenuFoodItemCard = ({ foodItem}) => {
           <div className="mt-auto">
             <button
               disabled={buttonDisability}
-              onClick={() => addToCart(foodItem._id.toString())}
+              onClick={handleAddToCart}
               className="w-full flex items-center justify-center gap-2 bg-slate-900 text-white py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:bg-orange-500 hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-1 active:translate-y-0 active:scale-95 group/btn"
             >
               <>

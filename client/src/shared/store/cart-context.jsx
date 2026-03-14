@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useReducer, useMemo } from "react";
 import { AuthContext } from "./auth-context";
+import toast from "react-hot-toast";
 
 const baseURL = import.meta.env.VITE_SERVER_BASE_URL;
 const CartContext = createContext(null);
@@ -124,11 +125,19 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (itemID, delta) => {
+    const item = cartState.items[itemID];
+    if (item) {
+      if (item.qty + delta < 1) {
+        toast.error("Quantity cannot be less than 1.");
+      } else if (cartState.totalQty + delta > 15) {
+        toast.error("Cannot add more than 15 items to the cart.");
+      }
+    }
     dispatchCart({ type: "UPDATE_QTY", payload: { itemID, delta } });
   };
 
   const addToCart = async (itemID) => {
-    if(!userState?._id) return;
+    console.log("DEBUG ADD TO CART: userState is ->", userState);
     try {
       dispatchCart({ type: "LOADING" });
       const res = await fetch(baseURL+"/cart/add", {
@@ -138,7 +147,15 @@ export const CartProvider = ({ children }) => {
         body: JSON.stringify({ itemID })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.errors?.[0]);
+      if (!res.ok) {
+        if (data.errors && data.errors.length > 0) {
+          toast.error(data.errors[0]);
+        } else {
+          toast.error("An error occurred while adding the item.");
+        }
+        dispatchCart({ type: "ERROR", payload: { message: data.errors?.[0] } });
+        return;
+      }
       dispatchCart({ type: "ADD", payload: { item: data.item } });
     } catch (err) {
       dispatchCart({ type: "ERROR", payload: { message: err.message } })

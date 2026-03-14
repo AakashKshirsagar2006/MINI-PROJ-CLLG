@@ -36,6 +36,13 @@ router.post('/cart/add',async (req,res)=>{
     const dbResult = await FoodItems.findById(itemObjectId);
     if(!dbResult) return res.status(400).json({errors:["Invalid food item"]});
 
+    // --- REAL-TIME STOCK VERIFICATION ---
+    const availableQty = dbResult.quantity - (dbResult.locked_quantity || 0);
+    if (!dbResult.availability || availableQty <= 0) {
+        return res.status(409).json({ errors: ["This item is currently out of stock."] });
+    }
+    // ------------------------------------
+
     if (!req.session.cart) {
         const expiresAt = new Date();
         expiresAt.setHours(24, 0, 0, 0);
